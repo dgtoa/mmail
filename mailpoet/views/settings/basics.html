@@ -3,10 +3,10 @@
     <tr>
       <th scope="row">
         <label for="settings[from_name]">
-          <%= __("Default sender") %>
+          <%= __("기본 발신자 정보") %>
         </label>
         <p class="description">
-          <%= __('These email addresses will be selected by default for each new email.') %>
+          <%= __('기본 발신자 정보를 등록합니다.') %>
         </p>
       </th>
       <td>
@@ -82,7 +82,7 @@
     </tr>
     <!-- ability to subscribe in comments -->
     <!-- TODO: Check if registration is enabled (if not, display a message and disable setting) -->
-    <tr>
+    <!-- <tr>
       <th scope="row">
         <label for="settings[subscribe_on_comment]">
           <%= __('Subscribe in comments') %>
@@ -138,11 +138,11 @@
           </p>
         </div>
       </td>
-    </tr>
+    </tr> -->
     <!-- ability to subscribe when registering -->
     <!-- TODO: Only available for the main site of a multisite! -->
     <!-- TODO: Check if registration is enabled (if not, display a message and disable setting) -->
-    <tr>
+    <!-- <tr>
       <th scope="row">
         <label for="settings[subscribe_on_register]">
           <%= __('Subscribe in registration form') %>
@@ -207,9 +207,9 @@
           </p>
         <% endif %>
       </td>
-    </tr>
+    </tr> -->
     <!-- edit subscription-->
-    <tr>
+    <!-- <tr>
       <th scope="row">
         <label for="subscription_manage_page">
           <%= __('Manage Subscription page') %>
@@ -264,7 +264,7 @@
           </select>
         </p>
       </td>
-    </tr>
+    </tr> -->
     <!-- unsubscribe-->
     <tr>
       <th scope="row">
@@ -272,9 +272,9 @@
           <%= __('Unsubscribe page') %>
         </label>
         <p class="description">
-          <%= __('When your subscribers click the "Unsubscribe" link, they will be directed to this page.') %>
+          <%= __('발송받은 뉴스레터를 통해 구독해제 클릭 시 구독해지 처리와 함께 안내할 페이지입니다.') %>
           <br />
-          <%= __('If you want to use a custom Unsubscribe page, simply paste this shortcode on to a WordPress page: [mailpoet_manage text="Manage your subscription"]') %>
+          <!-- <%= __('If you want to use a custom Unsubscribe page, simply paste this shortcode on to a WordPress page: [mailpoet_manage text="Manage your subscription"]') %> -->
         </p>
       </th>
       <td>
@@ -303,7 +303,7 @@
       </td>
     </tr>
     <!-- shortcode: archive page  -->
-    <tr>
+    <!-- <tr>
       <th scope="row">
         <label>
           <%= __('Archive page shortcode') %>
@@ -337,9 +337,9 @@
           </select>
         </p>
       </td>
-    </tr>
+    </tr> -->
     <!-- shortcode: total number of subscribers -->
-    <tr>
+    <!-- <tr>
       <th scope="row">
         <label>
           <%= __('Shortcode to display total number of subscribers') %>
@@ -373,7 +373,7 @@
           </select>
         </p>
       </td>
-    </tr>
+    </tr> -->
   </tbody>
 </table>
 

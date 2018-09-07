@@ -265,7 +265,7 @@ class Subscriber extends Model {
       ->findMany();
     $segment_list = array();
     $segment_list[] = array(
-      'label' => __('All Lists', 'mailpoet'),
+      'label' => __('모든 구독자 그룹', 'mailpoet'),
       'value' => ''
     );
 

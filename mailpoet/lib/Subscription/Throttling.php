@@ -23,7 +23,8 @@ class Throttling {
           )->count();
 
         if($subscription_count > 0) {
-          $timeout = $subscription_limit_base * pow(2, $subscription_count - 1);
+          //$timeout = $subscription_limit_base * pow(2, $subscription_count - 1);
+          $timeout = 5;
           $existing_user = SubscriberIP::where('ip', $subscriber_ip)
             ->whereRaw(
               '(`created_at` >= NOW() - INTERVAL ? SECOND)',

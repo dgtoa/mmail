@@ -461,7 +461,8 @@ tinymce.PluginManager.add('link', function(editor) {
 						target: data.target ? data.target : null,
 						rel: data.rel ? data.rel : null,
 						"class": data["class"] ? data["class"] : null,
-						title: data.title ? data.title : null
+						title: data.title ? data.title : null,
+						style: "display:block"
 					};
 
 					if (!editor.settings.allow_unsafe_link_target) {

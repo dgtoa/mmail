@@ -21,11 +21,11 @@
 
 <% block translations %>
   <%= localize({
-    'pageTitle': __('Emails'),
+    'pageTitle': __('이메일'),
 
-    'tabStandardTitle': __('Newsletters'),
+    'tabStandardTitle': __('뉴스레터'),
     'tabWelcomeTitle': __('Welcome Emails'),
-    'tabNotificationTitle': __('Post Notifications'),
+    'tabNotificationTitle': __('기사 발행 알림'),
 
     'searchLabel': __('Search'),
     'loadingItems': __('Loading emails...'),
@@ -57,13 +57,13 @@
     'selectType': __('Select type'),
     'template': __('Template'),
     'designer': __('Designer'),
-    'send': __('Send'),
+    'send': __('발송'),
 
-    'subject': __('Subject'),
+    'subject': __('제목'),
     'status': __('Status'),
     'statsListingActionTitle': __('Statistics'),
     'statistics': __('Opened, Clicked'),
-    'lists': __('Lists'),
+    'lists': __('구독자 그룹'),
     'settings': __('Settings'),
     'history': __('History'),
     'viewHistory': __('View history'),
@@ -83,7 +83,7 @@
     'newsletterDuplicated': __('Email "%$1s" has been duplicated.'),
     'notSentYet': __('Not sent yet'),
     'scheduledFor': __('Scheduled for'),
-    'scheduleIt': __('Schedule it'),
+    'scheduleIt': __('뉴스레터 발송예약'),
     'active': __('Active'),
     'inactive': __('Not Active'),
     'newsletterQueueCompleted': __('Sent to %$1d of %$2d'),
@@ -162,32 +162,32 @@
     'delayDaysAfter': __('day(s) later'),
     'delayWeeksAfter': __('week(s) later'),
 
-    'subjectLine': __('Subject line'),
-    'subjectLineTip': __("Be creative! It's the first thing that your subscribers see. Tempt them to open your email."),
-    'emptySubjectLineError': __('Please specify a subject'),
-    'segments': __('Lists'),
-    'segmentsTip': __('This subscriber segment will be used for this email.'),
+    'subjectLine': __('이메일 제목'),
+    'subjectLineTip': __('뉴스레터의 제목을 작성해주세요.'),
+    'emptySubjectLineError': __('뉴스레터의 제목을 작성해주세요.'),
+    'segments': __('구독자 그룹'),
+    'segmentsTip': __('선택한 구독자 그룹의 구독자들에게 뉴스레터가 발송됩니다.'),
     'selectSegmentPlaceholder': __('Select a list'),
     'noSegmentsSelectedError': __('Please select a list'),
     'sender': __('Sender'),
-    'senderTip': __('Your name and email'),
+    'senderTip': __('발신자 이메일 주소입니다.'),
     'senderNamePlaceholder': __('John Doe'),
     'senderAddressPlaceholder': __('john.doe@email.com'),
     'replyTo': __('Reply-to'),
-    'replyToTip': __('When your subscribers reply to your emails, their emails will go to this address.'),
+    'replyToTip': __('구독자들이 답장 시 이용할 이메일입니다.'),
     'replyToNamePlaceholder': __('John Doe'),
     'replyToAddressPlaceholder': __('john.doe@email.com'),
     'newsletterUpdated': __('Email was updated successfully!'),
     'newsletterAdded': __('Email was added successfully!'),
     'newsletterSendingError': __('An error occurred while trying to send. <a href="%$1s">Please check your settings</a>.'),
     'finalNewsletterStep': __('Final Step: Last Details'),
-    'saveDraftAndClose': __('Save as draft and close'),
+    'saveDraftAndClose': __('임시저장 후 닫기'),
     'helpTooltipSendEmail': __('You cannot send the same email twice, as that would be considered spam. <br /> If you must send the same email more than one time, simply duplicate this email first.'),
-    'orSimply': __('or simply'),
-    'goBackToDesign': __('go back to the Design page'),
+    'orSimply': __('or '),
+    'goBackToDesign': __('디자인 페이지로 돌아가기'),
     'websiteTimeIs': __("Your website’s time is"),
     'noScheduledDateError': __('Please enter the scheduled date.'),
-    'schedule': __('Schedule'),
+    'schedule': __('발송 예약'),
 
     'close': __('Close'),
     'today': __('Today'),
@@ -252,7 +252,7 @@
     'ifNewContentToSegments': __("if there's new content to %$1s."),
     'sendingToSegmentsNotSpecified': __('You need to select a list to send to.'),
 
-    'backToPostNotifications': __('Back to Post notifications'),
+    'backToPostNotifications': __('뒤로 가기'),
     'noSubscribers': __('No subscribers!'),
 
     'mailerSendErrorNotice': __('Sending is paused because %$1s prevents MailPoet from delivering emails with the following error: %$2s'),
@@ -260,7 +260,10 @@
     'mailerCheckSettingsNotice': __('Check your [link]sending method settings[/link].'),
     'mailerResumeSendingButton': __('Resume sending'),
     'mailerSendingResumedNotice': __('Sending has been resumed.'),
-    'confirmEdit': __('Sending is in progress. Do you want to pause sending and edit the newsletter?')
+    'confirmEdit': __('Sending is in progress. Do you want to pause sending and edit the newsletter?'),
+    'confirmTitle': __('Confirm to proceed'),
+    'confirmLabel': __('Confirm'),
+    'cancelLabel': __('Cancel')
   }) %>
 <% endblock %>
 

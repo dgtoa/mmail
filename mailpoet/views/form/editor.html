@@ -47,7 +47,7 @@
             <div id="mailpoet_settings_segment_selection">
               <!-- Form settings: list selection -->
               <p>
-                <strong><%= __('This form adds the subscribers to these lists:') %></strong>
+                <strong><%= __('이 폼을 통해 구독신청한 사용자가 가입될 구독자 그룹을 설정해주세요.') %></strong>
               </p>
               <select
                 id="mailpoet_form_segments"
@@ -66,7 +66,7 @@
             <div id="mailpoet_on_success">
               <!-- Form settings: after submit -->
               <p>
-                <label><strong><%= __('After submit...') %></strong></label>
+                <label><strong><%= __('구독신청 후...') %></strong></label>
                 <label>
                   <input class="mailpoet_radio"
                     type="radio"
@@ -164,9 +164,9 @@
         <div>
           <ul id="mailpoet_toolbar_fields">
           </ul>
-          <p class="mailpoet_align_center">
+          <!-- <p class="mailpoet_align_center">
             <a id="mailpoet_form_add_field" class="button button-primary" href="javascript:;" style="width:100%;"><%= __('Add New Field') %></a>
-          </p>
+          </p> -->
         </div>
 
       </div>
@@ -216,31 +216,31 @@
       },
       {
         id: "first_name",
-        name: "<%= __('First name') %>",
+        name: "<%= __('User name') %>",
         type: 'text',
         params: {
           label: "<%= __('First name') %>"
         },
         readonly: true
       },
-      {
-        id: "last_name",
-        name: "<%= __('Last name') %>",
-        type: 'text',
-        params: {
-          label: "<%= __('Last name') %>"
-        },
-        readonly: true
-      },
-      {
-        id: "segments",
-        name: "<%= __('List selection') %>",
-        type: 'segment',
-        params: {
-          label: "<%= __('Select list(s):') %>"
-        },
-        readonly: true
-      },
+      // {
+        // id: "last_name",
+        // name: "<%= __('Last name') %>",
+        // type: 'text',
+        // params: {
+          // label: "<%= __('Last name') %>"
+        // },
+        // readonly: true
+      // },
+      // {
+        // id: "segments",
+        // name: "<%= __('List selection') %>",
+        // type: 'segment',
+        // params: {
+          // label: "<%= __('Select list(s):') %>"
+        // },
+        // readonly: true
+      // },
       {
         id: 'html',
         name: "<%= __('Random text or HTML') %>",
@@ -581,15 +581,15 @@
         });
 
         // add new field
-        $(document).on('click', '#mailpoet_form_add_field', function() {
-          // open popup
-          MailPoet.Modal.popup({
-            title: "<%= __('Add new field') %>",
-            template: $('#form_template_field_form').html()
-          });
-
-          return false;
-        });
+        // $(document).on('click', '#mailpoet_form_add_field', function() {
+          // // open popup
+          // MailPoet.Modal.popup({
+            // title: "<%= __('Add new field') %>",
+            // template: $('#form_template_field_form').html()
+          // });
+// 
+          // return false;
+        // });
 
         // edit field
         $(document).on('click', '.mailpoet_form_field_edit', function() {

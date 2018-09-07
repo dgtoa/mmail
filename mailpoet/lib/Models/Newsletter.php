@@ -543,7 +543,7 @@ class Newsletter extends Model {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
-      'label' => __('All Lists', 'mailpoet'),
+      'label' => __('모든 구독자 그룹', 'mailpoet'),
       'value' => ''
     );
 
@@ -794,7 +794,7 @@ class Newsletter extends Model {
 
   static function createOrUpdate($data = array()) {
     $newsletter = false;
-
+    
     if(isset($data['id']) && (int)$data['id'] > 0) {
       $newsletter = self::findOne((int)$data['id']);
     }
@@ -831,9 +831,11 @@ class Newsletter extends Model {
           : ''
         );
       }
-
+        
       $newsletter->hydrate($data);
     } else {
+        // $thumbnail_url = $data['thumbnailURL'];
+        //$data['thumbnail_url'] = $data['thumbnail_url'];
       unset($data['id']);
       $newsletter->set($data);
     }

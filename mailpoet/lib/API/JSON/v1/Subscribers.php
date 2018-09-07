@@ -10,7 +10,9 @@ use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
+use MailPoet\Segments\SubscribersListings;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
+use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -40,12 +42,15 @@ class Subscribers extends APIEndpoint {
   }
 
   function listing($data = array()) {
-    $listing = new Listing\Handler(
-      '\MailPoet\Models\Subscriber',
-      $data
-    );
 
-    $listing_data = $listing->get();
+    if(!isset($data['filter']['segment'])) {
+      $listing = new Listing\Handler('\MailPoet\Models\Subscriber', $data);
+
+      $listing_data = $listing->get();
+    } else {
+      $listings = new SubscribersListings();
+      $listing_data = $listings->getListingsInSegment($data);
+    }
 
     $data = array();
     foreach($listing_data['items'] as $subscriber) {
@@ -54,6 +59,10 @@ class Subscribers extends APIEndpoint {
         ->asArray();
     }
 
+    $listing_data['filters']['segment'] = Hooks::applyFilters(
+      'mailpoet_subscribers_listings_filters_segments',
+      $listing_data['filters']['segment']
+    );
     return $this->successResponse($data, array(
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
@@ -101,7 +110,8 @@ class Subscribers extends APIEndpoint {
     $timeout = SubscriptionThrottling::throttle();
 
     if($timeout > 0) {
-      throw new \Exception(sprintf(__('You need to wait %d seconds before subscribing again.', 'mailpoet'), $timeout));
+      //throw new \Exception(sprintf(__('You need to wait %d seconds before subscribing again.', 'mailpoet'), $timeout));
+      throw new \Exception(sprintf(__('잠시 후에 다시 시도해주세요.', 'mailpoet'), $timeout));
     }
 
     $subscriber = Subscriber::subscribe($data, $segment_ids);

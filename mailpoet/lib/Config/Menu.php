@@ -68,7 +68,7 @@ class Menu {
     // Main page
     add_menu_page(
       'MailPoet',
-      'MailPoet',
+      '뉴스레터',
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
       self::MAIN_PAGE_SLUG,
       null,
@@ -80,7 +80,7 @@ class Menu {
     $newsletters_page = add_submenu_page(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Emails', 'mailpoet')),
-      __('Emails', 'mailpoet'),
+      __('이메일', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_EMAILS,
       self::MAIN_PAGE_SLUG,
       array(
@@ -118,7 +118,7 @@ class Menu {
     $forms_page = add_submenu_page(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Forms', 'mailpoet')),
-      __('Forms', 'mailpoet'),
+      __('구독신청 폼', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_FORMS,
       'mailpoet-forms',
       array(
@@ -156,7 +156,7 @@ class Menu {
     $subscribers_page = add_submenu_page(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Subscribers', 'mailpoet')),
-      __('Subscribers', 'mailpoet'),
+      __('구독자 관리', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
       'mailpoet-subscribers',
       array(
@@ -207,7 +207,7 @@ class Menu {
     $segments_page = add_submenu_page(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Lists', 'mailpoet')),
-      __('Lists', 'mailpoet'),
+      __('구독자 그룹', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SEGMENTS,
       'mailpoet-segments',
       array(
@@ -234,7 +234,7 @@ class Menu {
     add_submenu_page(
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Settings', 'mailpoet')),
-      __('Settings', 'mailpoet'),
+      __('설정', 'mailpoet'),
       AccessControl::PERMISSION_MANAGE_SETTINGS,
       'mailpoet-settings',
       array(
@@ -244,31 +244,31 @@ class Menu {
     );
 
     // Help page
-    add_submenu_page(
-      self::MAIN_PAGE_SLUG,
-      $this->setPageTitle(__('Help', 'mailpoet')),
-      __('Help', 'mailpoet'),
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      'mailpoet-help',
-      array(
-        $this,
-        'help'
-      )
-    );
+    // add_submenu_page(
+      // self::MAIN_PAGE_SLUG,
+      // $this->setPageTitle(__('Help', 'mailpoet')),
+      // __('Help', 'mailpoet'),
+      // AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      // 'mailpoet-help',
+      // array(
+        // $this,
+        // 'help'
+      // )
+    // );
 
     // Premium page
     // Only show this page in menu if the Premium plugin is not activated
-    add_submenu_page(
-      License::getLicense() ? true : self::MAIN_PAGE_SLUG,
-      $this->setPageTitle(__('Premium', 'mailpoet')),
-      __('Premium', 'mailpoet'),
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      'mailpoet-premium',
-      array(
-        $this,
-        'premium'
-      )
-    );
+    // add_submenu_page(
+      // License::getLicense() ? true : self::MAIN_PAGE_SLUG,
+      // $this->setPageTitle(__('Premium', 'mailpoet')),
+      // __('Premium', 'mailpoet'),
+      // AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      // 'mailpoet-premium',
+      // array(
+        // $this,
+        // 'premium'
+      // )
+    // );
 
     // Welcome page
     add_submenu_page(

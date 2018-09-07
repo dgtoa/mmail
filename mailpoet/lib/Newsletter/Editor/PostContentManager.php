@@ -15,23 +15,50 @@ class PostContentManager {
     $this->max_excerpt_length = Hooks::applyFilters('mailpoet_newsletter_post_excerpt_length', $this->max_excerpt_length);
   }
 
+function cut_str2($str, $len, $suffix="…", $mb_strimwidth=false)
+{
+    $str = str_replace ( array("&quot;", "&apos;", "&amp;", "&lt;", "&gt;") , array("\"", "\'", "&", "<", ">"), $str);
+    //if로 mb_strimwidth의 불린값을 받아와서 사용할껀지 말껀지 처리
+    if ($mb_strimwidth == false) {
+        $arr_str = preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
+        $str_len = count($arr_str);
+
+        if ($str_len >= $len) {
+            $slice_str = array_slice($arr_str, 0, $len);
+            $str = join("", $slice_str);
+
+            return $str . ($str_len > $len ? $suffix : '');
+        } else {
+            $str = join("", $arr_str);
+            return $str;
+        }
+    } else {
+        //mb_strimwidth를 사용할 경우 아래처럼 처리
+
+        //글자수를 줄이려는 문자열이 인코딩이 어떻게 되는지 판단
+        $str_encoding = mb_detect_encoding($str, 'UTF-8, EUC-KR');
+        //mb_strimwidth 내장함수를 이용하여 글씨를 자름
+        $result_str = mb_strimwidth($str, 0, $len, $suffix, $str_encoding);
+        return $result_str;
+    }
+}
+
   function getContent($post, $displayType) {
     if($displayType === 'titleOnly') {
       return '';
     } elseif($displayType === 'excerpt') {
       // get excerpt
       if(!empty($post->post_excerpt)) {
-        return $post->post_excerpt;
+        return self::stripShortCodes($post->post_excerpt);
       } else {
-        return $this->generateExcerpt($post->post_content);
+        return $this->generateExcerpt(self::stripShortCodes($post->post_content));
       }
     } else {
-      return $post->post_content;
+      return self::stripShortCodes($post->post_content);
     }
   }
 
   function filterContent($content) {
-    $content = self::stripShortCodes($content);
     $content = self::convertEmbeddedContent($content);
 
     // convert h4 h5 h6 to h3
@@ -52,6 +79,7 @@ class PostContentManager {
     $content = strip_tags($content, implode('', $tags_not_being_stripped));
     $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS .'"', wpautop($content));
     $content = trim($content);
+    $content = $this->cut_str2($content,220,"...",true);
 
     return $content;
   }

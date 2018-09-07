@@ -4,11 +4,10 @@
     <tr>
       <th scope="row">
         <label>
-          <%= __('Enable sign-up confirmation') %>
+          <%= __('뉴스레터 구독신청시 이메일 인증 사용') %>
         </label>
         <p class="description">
-          <%= __("If you enable this option, your subscribers will first receive a confirmation email after they subscribe. Once they confirm their subscription (via this email), they will be marked as 'confirmed' and will begin to receive your email newsletters.") %>
-          <a href="http://docs.mailpoet.com/article/128-why-you-should-use-signup-confirmation-double-opt-in" target="_blank"><%= __('Read more about Double Opt-in confirmation.') %></a>
+          <%= __("뉴스레터 구독신청 위젯을 통해 구독신청한 사용자에게 이메일을 발송해 인증 절차를 거칠지 결정합니다.") %>
         </p>
       </th>
       <td>
@@ -130,7 +129,7 @@
           <%= __('Email content') %>
         </label>
         <p class="description">
-          <%= __("Don't forget to include:<br /><br />[activation_link]Confirm your subscription.[/activation_link]<br /><br />Optional: [lists_to_confirm].") %>
+          <%= __("참고하세요:<br /><br />[activation_link]여기를 눌러 인증을 완료해주세요.[/activation_link]<br /><br />.") %>
         </p>
       </th>
       <td>
@@ -148,10 +147,10 @@
     <tr>
       <th scope="row">
         <label>
-          <%= __('Confirmation page') %>
+          <%= __('이메일 인증 완료 후 이동 페이지') %>
         </label>
         <p class="description">
-          <%= __('When subscribers click on the activation link, they will be redirected to this page.') %>
+          <%= __('구독신청한 사용자가 이메일 상에서 링크를 클릭해 인증 완료할 시 안내 페이지를 선택합니다.') %>
         </p>
       </th>
       <td>

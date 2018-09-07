@@ -46,6 +46,10 @@
     'newsletter/templates/blocks/container/twoColumnLayoutWidget.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_container_two_and_one_column_widget',
+    'newsletter/templates/blocks/container/twoAndOneColumnLayoutWidget.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_container_three_column_widget',
     'newsletter/templates/blocks/container/threeColumnLayoutWidget.hbs'
   ) %>
@@ -418,6 +422,9 @@
       twoColumnLayoutInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_container_two_column_widget').html()
       ),
+      twoAndOneColumnLayoutInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_container_two_and_one_column_widget').html()
+      ),
       threeColumnLayoutInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_container_three_column_widget').html()
       ),
@@ -558,12 +565,14 @@
     var config = {
       availableStyles: {
         textSizes: [
-          '9px', '10px', '11px', '12px', '13px', '14px', '15px', '16px',
-          '17px', '18px', '19px', '20px', '21px', '22px', '23px', '24px'
+          '8px', '9px', '10px', '11px', '12px', '13px', '14px', '15px', '16px',
+          '17px', '18px', '19px', '20px', '21px', '22px', '23px', '24px', 
+          '25px', '26px', '27px', '28px', '29px', '30px', '31px', '32px', '33px', '34px', '35px', '36px', '37px', '38px', '39px', '40px'
         ],
         headingSizes: [
-          '10px', '12px', '14px', '16px', '18px', '20px', '22px', '24px',
-          '26px', '30px', '36px', '40px'
+          '8px', '9px', '10px', '11px', '12px', '13px', '14px', '15px', '16px',
+          '17px', '18px', '19px', '20px', '21px', '22px', '23px', '24px', 
+          '25px', '26px', '27px', '28px', '29px', '30px', '31px', '32px', '33px', '34px', '35px', '36px', '37px', '38px', '39px', '40px'
         ],
         fonts: [
           'Arial',
@@ -962,7 +971,7 @@
       },
       blockDefaults: {
         automatedLatestContent: {
-          amount: '5',
+          amount: '1',
           contentType: 'post', // 'post'|'page'|'mailpoet_page'
           inclusionType: 'include', // 'include'|'exclude'
           displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
@@ -970,12 +979,12 @@
           titleAlignment: 'left', // 'left'|'center'|'right'
           titleIsLink: false, // false|true
           imageFullWidth: false, // true|false
-          featuredImagePosition: 'belowTitle', // 'belowTitle'|'aboveTitle'|'none',
+          featuredImagePosition: 'aboveTitle', // 'belowTitle'|'aboveTitle'|'none',
           showAuthor: 'no', // 'no'|'aboveText'|'belowText'
           authorPrecededBy: '<%= __('Author:') | escape('js') %>',
           showCategories: 'no', // 'no'|'aboveText'|'belowText'
           categoriesPrecededBy: '<%= __('Categories:') | escape('js') %>',
-          readMoreType: 'button', // 'link'|'button'
+          readMoreType: 'link', // 'link'|'button'
           readMoreText: 'Read more', // 'link'|'button'
           readMoreButton: {
             text: '<%= __('Read more') | escape('js') %>',
@@ -983,17 +992,17 @@
             styles: {
               block: {
                 backgroundColor: '#ffffff',
-                borderColor: '#00ddff',
-                borderWidth: '1px',
-                borderRadius: '5px',
+                borderColor: '#000000',
+                borderWidth: '2px',
+                borderRadius: '0px',
                 borderStyle: 'solid',
-                width: '120px',
-                lineHeight: '30px',
-                fontColor: '#00ddff',
+                width: '150px',
+                lineHeight: '40px',
+                fontColor: '#000000',
                 fontFamily: 'Arial',
-                fontSize: '20px',
-                fontWeight: 'normal',
-                textAlign: 'center',
+                fontSize: '15px',
+                fontWeight: 'bold',
+                textAlign: 'left',
               }
             }
           },
@@ -1005,7 +1014,7 @@
                 backgroundColor: 'transparent',
                 padding: '13px',
                 borderStyle: 'solid',
-                borderWidth: '3px',
+                borderWidth: '1px',
                 borderColor: '#aaaaaa',
               },
             },
@@ -1074,8 +1083,8 @@
           src: '',
           alt: '<%= __('An image of...') | escape('js') %>',
           fullWidth: false,
-          width: '281px',
-          height: '190px',
+          width: '660px',
+          height: '371px',
           styles: {
             block: {
               textAlign: 'center',
@@ -1085,6 +1094,7 @@
         posts: {
           amount: '10',
           contentType: 'post', // 'post'|'page'|'mailpoet_page'
+          featuredPost: false, //false|true
           postStatus: 'publish', // 'draft'|'pending'|'private'|'publish'|'future'
           inclusionType: 'include', // 'include'|'exclude'
           displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
@@ -1092,11 +1102,11 @@
           titleAlignment: 'left', // 'left'|'center'|'right'
           titleIsLink: false, // false|true
           imageFullWidth: false, // true|false
-          featuredImagePosition: 'belowTitle', // 'belowTitle'|'aboveTitle'|'none',
+          featuredImagePosition: 'aboveTitle', // 'belowTitle'|'aboveTitle'|'none',
           showAuthor: 'no', // 'no'|'aboveText'|'belowText'
           authorPrecededBy: '<%= __('Author:') | escape('js') %>',
-          showCategories: 'no', // 'no'|'aboveText'|'belowText'
-          categoriesPrecededBy: '<%= __('Categories:') | escape('js') %>',
+          showCategories: 'aboveText', // 'no'|'aboveText'|'belowText'
+          categoriesPrecededBy: '<%= __('') | escape('js') %>',
           readMoreType: 'link', // 'link'|'button'
           readMoreText: 'Read more', // 'link'|'button'
           readMoreButton: {
@@ -1107,15 +1117,15 @@
                 backgroundColor: '#ffffff',
                 borderColor: '#000000',
                 borderWidth: '1px',
-                borderRadius: '5px',
+                borderRadius: '1px',
                 borderStyle: 'solid',
-                width: '120px',
-                lineHeight: '30px',
+                width: '150px',
+                lineHeight: '40px',
                 fontColor: '#000000',
                 fontFamily: 'Arial',
                 fontSize: '20px',
                 fontWeight: 'normal',
-                textAlign: 'center',
+                textAlign: 'left',
               },
             },
           },
@@ -1166,7 +1176,7 @@
           styles: {
             block: {
               backgroundColor: 'transparent',
-              height: '40px',
+              height: '20px',
             },
           },
         },

@@ -13,7 +13,7 @@ abstract class Base {
       $rules['required'] = true;
       $rules['minlength'] = ModelValidator::EMAIL_MIN_LENGTH;
       $rules['maxlength'] = ModelValidator::EMAIL_MAX_LENGTH;
-      $rules['error-message'] = __('Please specify a valid email address.', 'mailpoet');
+      $rules['error-message'] = __('이메일 주소를 정확히 입력해 주세요.', 'mailpoet');
     }
 
     if($block['id'] === 'segments') {
@@ -99,7 +99,7 @@ abstract class Base {
       $html .= static::getFieldLabel($block);
       // add an asterisk if it's a required field
       if(isset($block['params']['required']) && $block['params']['required']) {
-        $html .= ' *';
+        $html .= ' ';
       }
       $html .= '" ';
     }

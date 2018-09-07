@@ -110,7 +110,7 @@ class Text {
       $next_element = $paragraph->getNextSibling();
       // unless this is the last element in column, add double line breaks
       $line_breaks = ($next_element && !trim($next_element->text())) ?
-        '<br /><br />' :
+        '<br />' :
         '';
       // if this element is followed by a list, add single line break
       $line_breaks = ($next_element && preg_match('/<li/i', $next_element->getOuterText())) ?
@@ -120,12 +120,12 @@ class Text {
         $paragraph->removeClass(PostContentManager::WP_POST_CLASS);
         // if this element is followed by a paragraph, add double line breaks
         $line_breaks = ($next_element && preg_match('/<p/i', $next_element->getOuterText())) ?
-          '<br /><br />' :
+          '<br />' :
           $line_breaks;
       }
       $paragraph->html('
         <tr>
-          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . $style . '">
+          <td class="mailpoet_paragraph" style="padding-bottom:7px;word-break:break-word;word-wrap:break-word;' . $style . '">
             ' . $contents . $line_breaks . '
           </td>
          </tr>'
@@ -160,7 +160,7 @@ class Text {
     if(!$headings->count()) return $html;
     foreach($headings as $heading) {
       $heading->style = StylesHelper::applyTextAlignment($heading->style);
-      $heading->style .= 'padding:0;font-style:normal;font-weight:normal;';
+      $heading->style .= 'padding:0;font-style:normal;';
     }
     return $DOM->__toString();
   }

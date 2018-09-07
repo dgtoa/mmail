@@ -1,22 +1,188 @@
 webpackJsonp([0],{
 
 /***/ 494:
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	//Types of elements found in the DOM
-	module.exports = {
-		Text: "text", //Text
-		Directive: "directive", //<? ... ?>
-		Comment: "comment", //<!-- ... -->
-		Script: "script", //<script> tags
-		Style: "style", //<style> tags
-		Tag: "tag", //Any tag
-		CDATA: "cdata", //<![CDATA[ ... ]]>
+	/*
+	  Module dependencies
+	*/
+	var ElementType = __webpack_require__(495);
+	var entities = __webpack_require__(496);
+	__webpack_require__(606);
 
-		isTag: function(elem){
-			return elem.type === "tag" || elem.type === "script" || elem.type === "style";
-		}
+	/*
+	  Boolean Attributes
+	*/
+	var booleanAttributes = {
+	  __proto__: null,
+	  allowfullscreen: true,
+	  async: true,
+	  autofocus: true,
+	  autoplay: true,
+	  checked: true,
+	  controls: true,
+	  default: true,
+	  defer: true,
+	  disabled: true,
+	  hidden: true,
+	  ismap: true,
+	  loop: true,
+	  multiple: true,
+	  muted: true,
+	  open: true,
+	  readonly: true,
+	  required: true,
+	  reversed: true,
+	  scoped: true,
+	  seamless: true,
+	  selected: true,
+	  typemustmatch: true
 	};
+
+	var unencodedElements = {
+	  __proto__: null,
+	  style: true,
+	  script: true,
+	  xmp: true,
+	  iframe: true,
+	  noembed: true,
+	  noframes: true,
+	  plaintext: true,
+	  noscript: true
+	};
+
+	/*
+	  Format attributes
+	*/
+	function formatAttrs(attributes, opts) {
+	  if (!attributes) return;
+
+	  var output = '',
+	      value;
+
+	  // Loop through the attributes
+	  for (var key in attributes) {
+	    value = attributes[key];
+	    if (output) {
+	      output += ' ';
+	    }
+
+	    if (!value && booleanAttributes[key]) {
+	      output += key;
+	    } else {
+	      output += key + '="' + (opts.decodeEntities ? entities.encodeXML(value) : value) + '"';
+	    }
+	  }
+
+	  return output;
+	}
+
+	/*
+	  Self-enclosing tags (stolen from node-htmlparser)
+	*/
+	var singleTag = {
+	  __proto__: null,
+	  area: true,
+	  base: true,
+	  basefont: true,
+	  br: true,
+	  col: true,
+	  command: true,
+	  embed: true,
+	  frame: true,
+	  hr: true,
+	  img: true,
+	  input: true,
+	  isindex: true,
+	  keygen: true,
+	  link: true,
+	  meta: true,
+	  param: true,
+	  source: true,
+	  track: true,
+	  wbr: true,
+	};
+
+
+	var render = module.exports = function(dom, opts) {
+	  if (!Array.isArray(dom) && !dom.cheerio) dom = [dom];
+	  opts = opts || {};
+
+	  var output = '';
+
+	  for(var i = 0; i < dom.length; i++){
+	    var elem = dom[i];
+
+	    if (elem.type === 'root')
+	      output += render(elem.children, opts);
+	    else if (ElementType.isTag(elem))
+	      output += renderTag(elem, opts);
+	    else if (elem.type === ElementType.Directive)
+	      output += renderDirective(elem);
+	    else if (elem.type === ElementType.Comment)
+	      output += renderComment(elem);
+	    else if (elem.type === ElementType.CDATA)
+	      output += renderCdata(elem);
+	    else
+	      output += renderText(elem, opts);
+	  }
+
+	  return output;
+	};
+
+	function renderTag(elem, opts) {
+	  // Handle SVG
+	  if (elem.name === "svg") opts = {decodeEntities: opts.decodeEntities, xmlMode: true};
+
+	  var tag = '<' + elem.name,
+	      attribs = formatAttrs(elem.attribs, opts);
+
+	  if (attribs) {
+	    tag += ' ' + attribs;
+	  }
+
+	  if (
+	    opts.xmlMode
+	    && (!elem.children || elem.children.length === 0)
+	  ) {
+	    tag += '/>';
+	  } else {
+	    tag += '>';
+	    if (elem.children) {
+	      tag += render(elem.children, opts);
+	    }
+
+	    if (!singleTag[elem.name] || opts.xmlMode) {
+	      tag += '</' + elem.name + '>';
+	    }
+	  }
+
+	  return tag;
+	}
+
+	function renderDirective(elem) {
+	  return '<' + elem.data + '>';
+	}
+
+	function renderText(elem, opts) {
+	  var data = elem.data || '';
+
+	  // if entities weren't decoded, no need to encode them back
+	  if (opts.decodeEntities && !(elem.parent && elem.parent.name in unencodedElements)) {
+	    data = entities.encodeXML(data);
+	  }
+
+	  return data;
+	}
+
+	function renderCdata(elem) {
+	  return '<![CDATA[' + elem.children[0].data + ']]>';
+	}
+
+	function renderComment(elem) {
+	  return '<!--' + elem.data + '-->';
+	}
+
 
 /***/ },
 
@@ -25,13 +191,13 @@ webpackJsonp([0],{
 
 	__webpack_require__(1);
 	__webpack_require__(428);
-	__webpack_require__(536);
-	__webpack_require__(540);
-	__webpack_require__(542);
-	__webpack_require__(545);
-	__webpack_require__(549);
+	__webpack_require__(537);
+	__webpack_require__(541);
+	__webpack_require__(543);
+	__webpack_require__(546);
 	__webpack_require__(550);
-	module.exports = __webpack_require__(554);
+	__webpack_require__(551);
+	module.exports = __webpack_require__(555);
 
 
 /***/ },
@@ -668,31 +834,31 @@ webpackJsonp([0],{
 
 	var _newslettersTemplatesJsx2 = _interopRequireDefault(_newslettersTemplatesJsx);
 
-	var _newslettersSendJsx = __webpack_require__(517);
+	var _newslettersSendJsx = __webpack_require__(518);
 
 	var _newslettersSendJsx2 = _interopRequireDefault(_newslettersSendJsx);
 
-	var _newslettersTypesStandardJsx = __webpack_require__(525);
+	var _newslettersTypesStandardJsx = __webpack_require__(526);
 
 	var _newslettersTypesStandardJsx2 = _interopRequireDefault(_newslettersTypesStandardJsx);
 
-	var _newslettersTypesNotificationNotificationJsx = __webpack_require__(526);
+	var _newslettersTypesNotificationNotificationJsx = __webpack_require__(527);
 
 	var _newslettersTypesNotificationNotificationJsx2 = _interopRequireDefault(_newslettersTypesNotificationNotificationJsx);
 
-	var _newslettersListingsStandardJsx = __webpack_require__(527);
+	var _newslettersListingsStandardJsx = __webpack_require__(528);
 
 	var _newslettersListingsStandardJsx2 = _interopRequireDefault(_newslettersListingsStandardJsx);
 
-	var _newslettersListingsWelcomeJsx = __webpack_require__(533);
+	var _newslettersListingsWelcomeJsx = __webpack_require__(534);
 
 	var _newslettersListingsWelcomeJsx2 = _interopRequireDefault(_newslettersListingsWelcomeJsx);
 
-	var _newslettersListingsNotificationJsx = __webpack_require__(534);
+	var _newslettersListingsNotificationJsx = __webpack_require__(535);
 
 	var _newslettersListingsNotificationJsx2 = _interopRequireDefault(_newslettersListingsNotificationJsx);
 
-	var _newslettersListingsNotification_historyJsx = __webpack_require__(535);
+	var _newslettersListingsNotification_historyJsx = __webpack_require__(536);
 
 	var _newslettersListingsNotification_historyJsx2 = _interopRequireDefault(_newslettersListingsNotification_historyJsx);
 
@@ -799,22 +965,24 @@ webpackJsonp([0],{
 	            MailPoet.I18n.t('create')
 	          );
 	        }).bind(this)()
-	      }, {
-	        id: 'welcome',
-	        title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
-	        description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
-	        action: (function () {
-	          return React.createElement(
-	            'div',
-	            null,
-	            React.createElement(
-	              'a',
-	              { href: '?page=mailpoet-premium', target: '_blank' },
-	              MailPoet.I18n.t('getPremiumVersion')
-	            )
-	          );
-	        })()
-	      }, {
+	      }, 
+	      // {
+	        // id: 'welcome',
+	        // title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
+	        // description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
+	        // action: (function () {
+	          // return React.createElement(
+	            // 'div',
+	            // null,
+	            // React.createElement(
+	              // 'a',
+	              // { href: '?page=mailpoet-premium', target: '_blank' },
+	              // MailPoet.I18n.t('getPremiumVersion')
+	            // )
+	          // );
+	        // })()
+	      // }, 
+	      {
 	        id: 'notification',
 	        title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
 	        description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
@@ -884,311 +1052,528 @@ webpackJsonp([0],{
 /***/ 434:
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(280), __webpack_require__(276), __webpack_require__(181), __webpack_require__(277), __webpack_require__(432), __webpack_require__(435)], __WEBPACK_AMD_DEFINE_RESULT__ = function (React, _, MailPoet, Router, classNames, Breadcrumb, HelpTooltip) {
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
 
-	  var ImportTemplate = React.createClass({
-	    displayName: 'ImportTemplate',
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	    saveTemplate: function saveTemplate(_saveTemplate) {
-	      var _this = this;
+	var _react = __webpack_require__(2);
 
-	      var template = _saveTemplate;
+	var _react2 = _interopRequireDefault(_react);
 
-	      // Stringify to enable transmission of primitive non-string value types
-	      if (!_.isUndefined(template.body)) {
-	        template.body = JSON.stringify(template.body);
+	var _underscore = __webpack_require__(280);
+
+	var _underscore2 = _interopRequireDefault(_underscore);
+
+	var _mailpoet = __webpack_require__(276);
+
+	var _mailpoet2 = _interopRequireDefault(_mailpoet);
+
+	var _reactConfirmAlert = __webpack_require__(435);
+
+	var _classnames = __webpack_require__(277);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _newslettersBreadcrumbJsx = __webpack_require__(432);
+
+	var _newslettersBreadcrumbJsx2 = _interopRequireDefault(_newslettersBreadcrumbJsx);
+
+	var _helpTooltipJsx = __webpack_require__(436);
+
+	var _helpTooltipJsx2 = _interopRequireDefault(_helpTooltipJsx);
+
+	var ImportTemplate = _react2['default'].createClass({
+	  displayName: 'ImportTemplate',
+
+	  saveTemplate: function saveTemplate(_saveTemplate) {
+	    var _this = this;
+
+	    var template = _saveTemplate;
+
+	    // Stringify to enable transmission of primitive non-string value types
+	    if (!_underscore2['default'].isUndefined(template.body)) {
+	      template.body = JSON.stringify(template.body);
+	    }
+
+	    _mailpoet2['default'].Modal.loading(true);
+
+	    _mailpoet2['default'].Ajax.post({
+	      api_version: window.mailpoet_api_version,
+	      endpoint: 'newsletterTemplates',
+	      action: 'save',
+	      data: template
+	    }).always(function () {
+	      _mailpoet2['default'].Modal.loading(false);
+	    }).done(function (response) {
+	      _this.props.onImport(response.data);
+	    }).fail(function (response) {
+	      if (response.errors.length > 0) {
+	        _mailpoet2['default'].Notice.error(response.errors.map(function (error) {
+	          return error.message;
+	        }), { scroll: true });
 	      }
+	    });
+	  },
+	  handleSubmit: function handleSubmit(e) {
+	    e.preventDefault();
 
-	      MailPoet.Modal.loading(true);
+	    if (_underscore2['default'].size(this.refs.templateFile.files) <= 0) return false;
 
-	      MailPoet.Ajax.post({
+	    var file = _underscore2['default'].first(this.refs.templateFile.files);
+	    var reader = new FileReader();
+	    var saveTemplate = this.saveTemplate;
+
+	    reader.onload = function (evt) {
+	      try {
+	        saveTemplate(JSON.parse(evt.target.result));
+	        _mailpoet2['default'].trackEvent('Emails > Template imported', {
+	          'MailPoet Free version': window.mailpoet_version
+	        });
+	      } catch (err) {
+	        _mailpoet2['default'].Notice.error(_mailpoet2['default'].I18n.t('templateFileMalformedError'));
+	      }
+	    };
+
+	    reader.readAsText(file);
+	  },
+	  render: function render() {
+	    return _react2['default'].createElement(
+	      'div',
+	      null,
+	      _react2['default'].createElement(
+	        'h2',
+	        null,
+	        _mailpoet2['default'].I18n.t('importTemplateTitle'),
+	        ' ',
+	        _react2['default'].createElement(_helpTooltipJsx2['default'], {
+	          tooltip: _mailpoet2['default'].I18n.t('helpTooltipTemplateUpload'),
+	          place: 'right',
+	          className: 'tooltip-help-import-template'
+	        })
+	      ),
+	      _react2['default'].createElement(
+	        'form',
+	        { onSubmit: this.handleSubmit },
+	        _react2['default'].createElement('input', { type: 'file', placeholder: _mailpoet2['default'].I18n.t('selectJsonFileToUpload'), ref: 'templateFile' }),
+	        _react2['default'].createElement(
+	          'p',
+	          { className: 'submit' },
+	          _react2['default'].createElement('input', {
+	            className: 'button button-primary',
+	            type: 'submit',
+	            value: _mailpoet2['default'].I18n.t('upload') })
+	        )
+	      )
+	    );
+	  }
+	});
+
+	var NewsletterTemplates = _react2['default'].createClass({
+	  displayName: 'NewsletterTemplates',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      loading: false,
+	      templates: []
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    this.getTemplates();
+	  },
+	  getTemplates: function getTemplates() {
+	    var _this2 = this;
+
+	    this.setState({ loading: true });
+
+	    _mailpoet2['default'].Modal.loading(true);
+
+	    _mailpoet2['default'].Ajax.post({
+	      api_version: window.mailpoet_api_version,
+	      endpoint: 'newsletterTemplates',
+	      action: 'getAll'
+	    }).always(function () {
+	      _mailpoet2['default'].Modal.loading(false);
+	    }).done(function (response) {
+	      if (_this2.isMounted()) {
+	        if (response.data.length === 0) {
+	          response.data = [{
+	            name: _mailpoet2['default'].I18n.t('mailpoetGuideTemplateTitle'),
+	            description: _mailpoet2['default'].I18n.t('mailpoetGuideTemplateDescription'),
+	            readonly: '1'
+	          }];
+	        }
+	        _this2.setState({
+	          templates: response.data,
+	          loading: false
+	        });
+	      }
+	    }).fail(function (response) {
+	      if (response.errors.length > 0) {
+	        _mailpoet2['default'].Notice.error(response.errors.map(function (error) {
+	          return error.message;
+	        }), { scroll: true });
+	      }
+	    });
+	  },
+	  handleSelectTemplate: function handleSelectTemplate(template) {
+	    var body = template.body;
+
+	    // Stringify to enable transmission of primitive non-string value types
+	    if (!_underscore2['default'].isUndefined(body)) {
+	      body = JSON.stringify(body);
+	    }
+
+	    _mailpoet2['default'].trackEvent('Emails > Template selected', {
+	      'MailPoet Free version': window.mailpoet_version,
+	      'Email name': template.name
+	    });
+
+	    _mailpoet2['default'].Ajax.post({
+	      api_version: window.mailpoet_api_version,
+	      endpoint: 'newsletters',
+	      action: 'save',
+	      data: {
+	        id: this.props.params.id,
+	        body: body
+	      }
+	    }).done(function (response) {
+	      // TODO: Move this URL elsewhere
+	      window.location = 'admin.php?page=mailpoet-newsletter-editor&id=' + response.data.id;
+	    }).fail(function (response) {
+	      if (response.errors.length > 0) {
+	        _mailpoet2['default'].Notice.error(response.errors.map(function (error) {
+	          return error.message;
+	        }), { scroll: true });
+	      }
+	    });
+	  },
+	  handleDeleteTemplate: function handleDeleteTemplate(template) {
+	    var _this3 = this;
+
+	    this.setState({ loading: true });
+	    var onConfirm = function onConfirm() {
+	      _mailpoet2['default'].Ajax.post({
 	        api_version: window.mailpoet_api_version,
 	        endpoint: 'newsletterTemplates',
-	        action: 'save',
-	        data: template
-	      }).always(function () {
-	        MailPoet.Modal.loading(false);
-	      }).done(function (response) {
-	        _this.props.onImport(response.data);
+	        action: 'delete',
+	        data: {
+	          id: template.id
+	        }
+	      }).done(function () {
+	        _this3.getTemplates();
 	      }).fail(function (response) {
 	        if (response.errors.length > 0) {
-	          MailPoet.Notice.error(response.errors.map(function (error) {
+	          _mailpoet2['default'].Notice.error(response.errors.map(function (error) {
 	            return error.message;
 	          }), { scroll: true });
 	        }
 	      });
-	    },
-	    handleSubmit: function handleSubmit(e) {
-	      e.preventDefault();
+	    };
+	    var onCancel = function onCancel() {
+	      _this3.setState({ loading: false });
+	    };
+	    (0, _reactConfirmAlert.confirmAlert)({
+	      title: _mailpoet2['default'].I18n.t('confirmTitle'),
+	      message: _mailpoet2['default'].I18n.t('confirmTemplateDeletion').replace('%$1s', template.name),
+	      confirmLabel: _mailpoet2['default'].I18n.t('confirmLabel'),
+	      cancelLabel: _mailpoet2['default'].I18n.t('cancelLabel'),
+	      onConfirm: onConfirm,
+	      onCancel: onCancel
+	    });
+	  },
+	  handleShowTemplate: function handleShowTemplate(template) {
+	    _mailpoet2['default'].Modal.popup({
+	      title: template.name,
+	      template: '<div class="mailpoet_boxes_preview" style="background-color: {{ body.globalStyles.body.backgroundColor }}"><img src="{{ thumbnail }}" /></div>',
+	      data: template
+	    });
+	  },
+	  handleTemplateImport: function handleTemplateImport() {
+	    this.getTemplates();
+	  },
+	  render: function render() {
+	    var _this4 = this;
 
-	      if (_.size(this.refs.templateFile.files) <= 0) return false;
-
-	      var file = _.first(this.refs.templateFile.files);
-	      var reader = new FileReader();
-	      var saveTemplate = this.saveTemplate;
-
-	      reader.onload = function (e) {
-	        try {
-	          saveTemplate(JSON.parse(e.target.result));
-	          MailPoet.trackEvent('Emails > Template imported', {
-	            'MailPoet Free version': window.mailpoet_version
-	          });
-	        } catch (err) {
-	          MailPoet.Notice.error(MailPoet.I18n.t('templateFileMalformedError'));
-	        }
-	      };
-
-	      reader.readAsText(file);
-	    },
-	    render: function render() {
-	      return React.createElement(
+	    var templates = this.state.templates.map(function (template, index) {
+	      var deleteLink = _react2['default'].createElement(
 	        'div',
-	        null,
-	        React.createElement(
-	          'h2',
-	          null,
-	          MailPoet.I18n.t('importTemplateTitle'),
-	          ' ',
-	          React.createElement(HelpTooltip, {
-	            tooltip: MailPoet.I18n.t('helpTooltipTemplateUpload'),
-	            place: 'right',
-	            className: 'tooltip-help-import-template'
-	          })
-	        ),
-	        React.createElement(
-	          'form',
-	          { onSubmit: this.handleSubmit },
-	          React.createElement('input', { type: 'file', placeholder: MailPoet.I18n.t('selectJsonFileToUpload'), ref: 'templateFile' }),
-	          React.createElement(
-	            'p',
-	            { className: 'submit' },
-	            React.createElement('input', {
-	              className: 'button button-primary',
-	              type: 'submit',
-	              value: MailPoet.I18n.t('upload') })
-	          )
+	        { className: 'mailpoet_delete' },
+	        _react2['default'].createElement(
+	          'a',
+	          {
+	            href: 'javascript:;',
+	            onClick: _this4.handleDeleteTemplate.bind(null, template)
+	          },
+	          _mailpoet2['default'].I18n.t('delete')
 	        )
 	      );
-	    }
-	  });
+	      var thumbnail = '';
 
-	  var NewsletterTemplates = React.createClass({
-	    displayName: 'NewsletterTemplates',
-
-	    getInitialState: function getInitialState() {
-	      return {
-	        loading: false,
-	        templates: []
-	      };
-	    },
-	    componentDidMount: function componentDidMount() {
-	      this.getTemplates();
-	    },
-	    getTemplates: function getTemplates() {
-	      var _this2 = this;
-
-	      this.setState({ loading: true });
-
-	      MailPoet.Modal.loading(true);
-
-	      MailPoet.Ajax.post({
-	        api_version: window.mailpoet_api_version,
-	        endpoint: 'newsletterTemplates',
-	        action: 'getAll'
-	      }).always(function () {
-	        MailPoet.Modal.loading(false);
-	      }).done(function (response) {
-	        if (_this2.isMounted()) {
-	          if (response.data.length === 0) {
-	            response.data = [{
-	              name: MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
-	              description: MailPoet.I18n.t('mailpoetGuideTemplateDescription'),
-	              readonly: '1'
-	            }];
-	          }
-	          _this2.setState({
-	            templates: response.data,
-	            loading: false
-	          });
-	        }
-	      }).fail(function (response) {
-	        if (response.errors.length > 0) {
-	          MailPoet.Notice.error(response.errors.map(function (error) {
-	            return error.message;
-	          }), { scroll: true });
-	        }
-	      });
-	    },
-	    handleSelectTemplate: function handleSelectTemplate(template) {
-	      var body = template.body;
-
-	      // Stringify to enable transmission of primitive non-string value types
-	      if (!_.isUndefined(body)) {
-	        body = JSON.stringify(body);
+	      if (typeof template.thumbnail === 'string' && template.thumbnail.length > 0) {
+	        thumbnail = _react2['default'].createElement(
+	          'a',
+	          { href: 'javascript:;', onClick: _this4.handleShowTemplate.bind(null, template) },
+	          _react2['default'].createElement('img', { src: template.thumbnail }),
+	          _react2['default'].createElement('div', { className: 'mailpoet_overlay' })
+	        );
 	      }
 
-	      MailPoet.trackEvent('Emails > Template selected', {
-	        'MailPoet Free version': window.mailpoet_version,
-	        'Email name': template.name
-	      });
-
-	      MailPoet.Ajax.post({
-	        api_version: window.mailpoet_api_version,
-	        endpoint: 'newsletters',
-	        action: 'save',
-	        data: {
-	          id: this.props.params.id,
-	          body: body
-	        }
-	      }).done(function (response) {
-	        // TODO: Move this URL elsewhere
-	        window.location = 'admin.php?page=mailpoet-newsletter-editor&id=' + response.data.id;
-	      }).fail(function (response) {
-	        if (response.errors.length > 0) {
-	          MailPoet.Notice.error(response.errors.map(function (error) {
-	            return error.message;
-	          }), { scroll: true });
-	        }
-	      });
-	    },
-	    handleDeleteTemplate: function handleDeleteTemplate(template) {
-	      var _this3 = this;
-
-	      this.setState({ loading: true });
-	      if (window.confirm(MailPoet.I18n.t('confirmTemplateDeletion').replace('%$1s', template.name))) {
-	        MailPoet.Ajax.post({
-	          api_version: window.mailpoet_api_version,
-	          endpoint: 'newsletterTemplates',
-	          action: 'delete',
-	          data: {
-	            id: template.id
-	          }
-	        }).done(function () {
-	          _this3.getTemplates();
-	        }).fail(function (response) {
-	          if (response.errors.length > 0) {
-	            MailPoet.Notice.error(response.errors.map(function (error) {
-	              return error.message;
-	            }), { scroll: true });
-	          }
-	        });
-	      } else {
-	        this.setState({ loading: false });
-	      }
-	    },
-	    handleShowTemplate: function handleShowTemplate(template) {
-	      MailPoet.Modal.popup({
-	        title: template.name,
-	        template: '<div class="mailpoet_boxes_preview" style="background-color: {{ body.globalStyles.body.backgroundColor }}"><img src="{{ thumbnail }}" /></div>',
-	        data: template
-	      });
-	    },
-	    handleTemplateImport: function handleTemplateImport() {
-	      this.getTemplates();
-	    },
-	    render: function render() {
-	      var _this4 = this;
-
-	      var templates = this.state.templates.map(function (template, index) {
-	        var deleteLink = React.createElement(
+	      return _react2['default'].createElement(
+	        'li',
+	        { key: 'template-' + index },
+	        _react2['default'].createElement(
 	          'div',
-	          { className: 'mailpoet_delete' },
-	          React.createElement(
+	          { className: 'mailpoet_thumbnail' },
+	          thumbnail
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'mailpoet_description' },
+	          _react2['default'].createElement(
+	            'h3',
+	            null,
+	            template.name
+	          ),
+	          _react2['default'].createElement(
+	            'p',
+	            null,
+	            template.description
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'mailpoet_actions' },
+	          _react2['default'].createElement(
 	            'a',
 	            {
-	              href: 'javascript:;',
-	              onClick: _this4.handleDeleteTemplate.bind(null, template)
+	              className: 'button button-secondary',
+	              onClick: _this4.handleShowTemplate.bind(null, template)
 	            },
-	            MailPoet.I18n.t('delete')
-	          )
-	        );
-	        var thumbnail = '';
-
-	        if (typeof template.thumbnail === 'string' && template.thumbnail.length > 0) {
-	          thumbnail = React.createElement(
+	            _mailpoet2['default'].I18n.t('preview')
+	          ),
+	          ' ',
+	          _react2['default'].createElement(
 	            'a',
-	            { href: 'javascript:;', onClick: _this4.handleShowTemplate.bind(null, template) },
-	            React.createElement('img', { src: template.thumbnail }),
-	            React.createElement('div', { className: 'mailpoet_overlay' })
-	          );
-	        }
-
-	        return React.createElement(
-	          'li',
-	          { key: 'template-' + index },
-	          React.createElement(
-	            'div',
-	            { className: 'mailpoet_thumbnail' },
-	            thumbnail
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'mailpoet_description' },
-	            React.createElement(
-	              'h3',
-	              null,
-	              template.name
-	            ),
-	            React.createElement(
-	              'p',
-	              null,
-	              template.description
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'mailpoet_actions' },
-	            React.createElement(
-	              'a',
-	              {
-	                className: 'button button-secondary',
-	                onClick: _this4.handleShowTemplate.bind(null, template)
-	              },
-	              MailPoet.I18n.t('preview')
-	            ),
-	            ' ',
-	            React.createElement(
-	              'a',
-	              {
-	                className: 'button button-primary',
-	                onClick: _this4.handleSelectTemplate.bind(null, template)
-	              },
-	              MailPoet.I18n.t('select')
-	            )
-	          ),
-	          template.readonly === '1' ? false : deleteLink
-	        );
-	      });
-
-	      var boxClasses = classNames('mailpoet_boxes', 'clearfix', { mailpoet_boxes_loading: this.state.loading });
-
-	      return React.createElement(
-	        'div',
-	        null,
-	        React.createElement(
-	          'h1',
-	          null,
-	          MailPoet.I18n.t('selectTemplateTitle')
+	            {
+	              className: 'button button-primary',
+	              'data-automation-id': 'select_template_' + index,
+	              onClick: _this4.handleSelectTemplate.bind(null, template)
+	            },
+	            _mailpoet2['default'].I18n.t('select')
+	          )
 	        ),
-	        React.createElement(Breadcrumb, { step: 'template' }),
-	        React.createElement(
-	          'ul',
-	          { className: boxClasses },
-	          templates
-	        ),
-	        React.createElement(ImportTemplate, { onImport: this.handleTemplateImport })
+	        template.readonly === '1' ? false : deleteLink
 	      );
-	    }
-	  });
+	    });
 
-	  return NewsletterTemplates;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    var boxClasses = (0, _classnames2['default'])('mailpoet_boxes', 'clearfix', { mailpoet_boxes_loading: this.state.loading });
+
+	    return _react2['default'].createElement(
+	      'div',
+	      null,
+	      _react2['default'].createElement(
+	        'h1',
+	        null,
+	        _mailpoet2['default'].I18n.t('selectTemplateTitle')
+	      ),
+	      _react2['default'].createElement(_newslettersBreadcrumbJsx2['default'], { step: 'template' }),
+	      _react2['default'].createElement(
+	        'ul',
+	        { className: boxClasses },
+	        templates
+	      ),
+	      _react2['default'].createElement(ImportTemplate, { onImport: this.handleTemplateImport })
+	    );
+	  }
+	});
+
+	exports['default'] = NewsletterTemplates;
+	module.exports = exports['default'];
 
 /***/ },
 
 /***/ 435:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	exports.confirmAlert = confirmAlert;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _propTypes = __webpack_require__(185);
+
+	var _propTypes2 = _interopRequireDefault(_propTypes);
+
+	var _reactDom = __webpack_require__(34);
+
+	var ReactConfirmAlert = (function (_Component) {
+	  _inherits(ReactConfirmAlert, _Component);
+
+	  function ReactConfirmAlert() {
+	    var _this = this;
+
+	    _classCallCheck(this, ReactConfirmAlert);
+
+	    _Component.apply(this, arguments);
+
+	    this.onClickConfirm = function () {
+	      _this.props.onConfirm();
+	      _this.close();
+	    };
+
+	    this.onClickCancel = function () {
+	      _this.props.onCancel();
+	      _this.close();
+	    };
+
+	    this.close = function () {
+	      removeElementReconfirm();
+	      removeSVGBlurReconfirm();
+	    };
+	  }
+
+	  ReactConfirmAlert.prototype.render = function render() {
+	    var _props = this.props;
+	    var title = _props.title;
+	    var message = _props.message;
+	    var confirmLabel = _props.confirmLabel;
+	    var cancelLabel = _props.cancelLabel;
+	    var childrenElement = _props.childrenElement;
+
+	    return _react2['default'].createElement(
+	      'div',
+	      { className: 'react-confirm-alert-overlay' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'react-confirm-alert' },
+	        title && _react2['default'].createElement(
+	          'h1',
+	          null,
+	          title
+	        ),
+	        message && _react2['default'].createElement(
+	          'h3',
+	          null,
+	          message
+	        ),
+	        childrenElement(),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'react-confirm-alert-button-group' },
+	          cancelLabel && _react2['default'].createElement(
+	            'button',
+	            { onClick: this.onClickCancel },
+	            cancelLabel
+	          ),
+	          confirmLabel && _react2['default'].createElement(
+	            'button',
+	            { onClick: this.onClickConfirm },
+	            confirmLabel
+	          )
+	        )
+	      )
+	    );
+	  };
+
+	  _createClass(ReactConfirmAlert, null, [{
+	    key: 'propTypes',
+	    value: {
+	      title: _propTypes2['default'].string,
+	      message: _propTypes2['default'].string,
+	      confirmLabel: _propTypes2['default'].string,
+	      cancelLabel: _propTypes2['default'].string,
+	      onConfirm: _propTypes2['default'].func,
+	      onCancel: _propTypes2['default'].func,
+	      children: _propTypes2['default'].node
+	    },
+	    enumerable: true
+	  }, {
+	    key: 'defaultProps',
+	    value: {
+	      title: false,
+	      message: false,
+	      childrenElement: function childrenElement() {
+	        return null;
+	      },
+	      confirmLabel: false,
+	      cancelLabel: false,
+	      onConfirm: function onConfirm() {
+	        return null;
+	      },
+	      onCancel: function onCancel() {
+	        return null;
+	      }
+	    },
+	    enumerable: true
+	  }]);
+
+	  return ReactConfirmAlert;
+	})(_react.Component);
+
+	exports['default'] = ReactConfirmAlert;
+
+	function createSVGBlurReconfirm() {
+	  var svgNS = 'http://www.w3.org/2000/svg';
+	  var feGaussianBlur = document.createElementNS(svgNS, 'feGaussianBlur');
+	  feGaussianBlur.setAttribute('stdDeviation', '0.7');
+
+	  var filter = document.createElementNS(svgNS, 'filter');
+	  filter.setAttribute('id', 'gaussian-blur');
+	  filter.appendChild(feGaussianBlur);
+
+	  var svgElem = document.createElementNS(svgNS, 'svg');
+	  svgElem.setAttribute('id', 'react-confirm-alert-firm-svg');
+	  svgElem.setAttribute('class', 'react-confirm-alert-svg');
+	  svgElem.appendChild(filter);
+
+	  document.body.appendChild(svgElem);
+	}
+
+	function removeSVGBlurReconfirm() {
+	  var svg = document.getElementById('react-confirm-alert-firm-svg');
+	  svg.parentNode.removeChild(svg);
+	  document.body.children[0].classList.remove('react-confirm-alert-blur');
+	}
+
+	function createElementReconfirm(properties) {
+	  document.body.children[0].classList.add('react-confirm-alert-blur');
+	  var divTarget = document.createElement('div');
+	  divTarget.id = 'react-confirm-alert';
+	  document.body.appendChild(divTarget);
+	  _reactDom.render(_react2['default'].createElement(ReactConfirmAlert, properties), divTarget);
+	}
+
+	function removeElementReconfirm() {
+	  var target = document.getElementById('react-confirm-alert');
+	  _reactDom.unmountComponentAtNode(target);
+	  target.parentNode.removeChild(target);
+	}
+
+	function confirmAlert(properties) {
+	  createSVGBlurReconfirm();
+	  createElementReconfirm(properties);
+	}
+
+/***/ },
+
+/***/ 436:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1199,11 +1584,11 @@ webpackJsonp([0],{
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactTooltip = __webpack_require__(436);
+	var _reactTooltip = __webpack_require__(437);
 
 	var _reactTooltip2 = _interopRequireDefault(_reactTooltip);
 
-	var _reactHtmlParser = __webpack_require__(449);
+	var _reactHtmlParser = __webpack_require__(450);
 
 	var _reactHtmlParser2 = _interopRequireDefault(_reactHtmlParser);
 
@@ -1272,7 +1657,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 449:
+/***/ 450:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1281,7 +1666,7 @@ webpackJsonp([0],{
 	  value: true
 	});
 
-	var _HtmlParser = __webpack_require__(450);
+	var _HtmlParser = __webpack_require__(451);
 
 	var _HtmlParser2 = _interopRequireDefault(_HtmlParser);
 
@@ -1291,7 +1676,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 450:
+/***/ 451:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1301,11 +1686,11 @@ webpackJsonp([0],{
 	});
 	exports.default = HtmlParser;
 
-	var _htmlparser = __webpack_require__(451);
+	var _htmlparser = __webpack_require__(452);
 
 	var _htmlparser2 = _interopRequireDefault(_htmlparser);
 
-	var _ProcessNodes = __webpack_require__(504);
+	var _ProcessNodes = __webpack_require__(505);
 
 	var _ProcessNodes2 = _interopRequireDefault(_ProcessNodes);
 
@@ -1324,11 +1709,11 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 451:
+/***/ 452:
 /***/ function(module, exports, __webpack_require__) {
 
-	var Parser = __webpack_require__(452),
-	    DomHandler = __webpack_require__(461);
+	var Parser = __webpack_require__(453),
+	    DomHandler = __webpack_require__(462);
 
 	function defineProp(name, value){
 		delete module.exports[name];
@@ -1338,26 +1723,26 @@ webpackJsonp([0],{
 
 	module.exports = {
 		Parser: Parser,
-		Tokenizer: __webpack_require__(453),
-		ElementType: __webpack_require__(462),
+		Tokenizer: __webpack_require__(454),
+		ElementType: __webpack_require__(463),
 		DomHandler: DomHandler,
 		get FeedHandler(){
-			return defineProp("FeedHandler", __webpack_require__(465));
+			return defineProp("FeedHandler", __webpack_require__(466));
 		},
 		get Stream(){
-			return defineProp("Stream", __webpack_require__(466));
+			return defineProp("Stream", __webpack_require__(467));
 		},
 		get WritableStream(){
-			return defineProp("WritableStream", __webpack_require__(467));
+			return defineProp("WritableStream", __webpack_require__(468));
 		},
 		get ProxyHandler(){
-			return defineProp("ProxyHandler", __webpack_require__(490));
+			return defineProp("ProxyHandler", __webpack_require__(491));
 		},
 		get DomUtils(){
-			return defineProp("DomUtils", __webpack_require__(491));
+			return defineProp("DomUtils", __webpack_require__(492));
 		},
 		get CollectingHandler(){
-			return defineProp("CollectingHandler", __webpack_require__(503));
+			return defineProp("CollectingHandler", __webpack_require__(504));
 		},
 		// For legacy support
 		DefaultHandler: DomHandler,
@@ -1399,10 +1784,10 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 452:
+/***/ 453:
 /***/ function(module, exports, __webpack_require__) {
 
-	var Tokenizer = __webpack_require__(453);
+	var Tokenizer = __webpack_require__(454);
 
 	/*
 		Options:
@@ -1524,7 +1909,7 @@ webpackJsonp([0],{
 		if(this._cbs.onparserinit) this._cbs.onparserinit(this);
 	}
 
-	__webpack_require__(459)(Parser, __webpack_require__(460).EventEmitter);
+	__webpack_require__(460)(Parser, __webpack_require__(461).EventEmitter);
 
 	Parser.prototype._updatePosition = function(initialOffset){
 		if(this.endIndex === null){
@@ -1759,15 +2144,15 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 453:
+/***/ 454:
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = Tokenizer;
 
-	var decodeCodePoint = __webpack_require__(454),
-	    entityMap = __webpack_require__(456),
-	    legacyMap = __webpack_require__(457),
-	    xmlMap    = __webpack_require__(458),
+	var decodeCodePoint = __webpack_require__(455),
+	    entityMap = __webpack_require__(457),
+	    legacyMap = __webpack_require__(458),
+	    xmlMap    = __webpack_require__(459),
 
 	    i = 0,
 
@@ -2672,10 +3057,10 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 454:
+/***/ 455:
 /***/ function(module, exports, __webpack_require__) {
 
-	var decodeMap = __webpack_require__(455);
+	var decodeMap = __webpack_require__(456);
 
 	module.exports = decodeCodePoint;
 
@@ -2705,35 +3090,35 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 455:
+/***/ 456:
 /***/ function(module, exports) {
 
 	module.exports = {"0":65533,"128":8364,"130":8218,"131":402,"132":8222,"133":8230,"134":8224,"135":8225,"136":710,"137":8240,"138":352,"139":8249,"140":338,"142":381,"145":8216,"146":8217,"147":8220,"148":8221,"149":8226,"150":8211,"151":8212,"152":732,"153":8482,"154":353,"155":8250,"156":339,"158":382,"159":376}
 
 /***/ },
 
-/***/ 456:
+/***/ 457:
 /***/ function(module, exports) {
 
 	module.exports = {"Aacute":"Á","aacute":"á","Abreve":"Ă","abreve":"ă","ac":"∾","acd":"∿","acE":"∾̳","Acirc":"Â","acirc":"â","acute":"´","Acy":"А","acy":"а","AElig":"Æ","aelig":"æ","af":"⁡","Afr":"𝔄","afr":"𝔞","Agrave":"À","agrave":"à","alefsym":"ℵ","aleph":"ℵ","Alpha":"Α","alpha":"α","Amacr":"Ā","amacr":"ā","amalg":"⨿","amp":"&","AMP":"&","andand":"⩕","And":"⩓","and":"∧","andd":"⩜","andslope":"⩘","andv":"⩚","ang":"∠","ange":"⦤","angle":"∠","angmsdaa":"⦨","angmsdab":"⦩","angmsdac":"⦪","angmsdad":"⦫","angmsdae":"⦬","angmsdaf":"⦭","angmsdag":"⦮","angmsdah":"⦯","angmsd":"∡","angrt":"∟","angrtvb":"⊾","angrtvbd":"⦝","angsph":"∢","angst":"Å","angzarr":"⍼","Aogon":"Ą","aogon":"ą","Aopf":"𝔸","aopf":"𝕒","apacir":"⩯","ap":"≈","apE":"⩰","ape":"≊","apid":"≋","apos":"'","ApplyFunction":"⁡","approx":"≈","approxeq":"≊","Aring":"Å","aring":"å","Ascr":"𝒜","ascr":"𝒶","Assign":"≔","ast":"*","asymp":"≈","asympeq":"≍","Atilde":"Ã","atilde":"ã","Auml":"Ä","auml":"ä","awconint":"∳","awint":"⨑","backcong":"≌","backepsilon":"϶","backprime":"‵","backsim":"∽","backsimeq":"⋍","Backslash":"∖","Barv":"⫧","barvee":"⊽","barwed":"⌅","Barwed":"⌆","barwedge":"⌅","bbrk":"⎵","bbrktbrk":"⎶","bcong":"≌","Bcy":"Б","bcy":"б","bdquo":"„","becaus":"∵","because":"∵","Because":"∵","bemptyv":"⦰","bepsi":"϶","bernou":"ℬ","Bernoullis":"ℬ","Beta":"Β","beta":"β","beth":"ℶ","between":"≬","Bfr":"𝔅","bfr":"𝔟","bigcap":"⋂","bigcirc":"◯","bigcup":"⋃","bigodot":"⨀","bigoplus":"⨁","bigotimes":"⨂","bigsqcup":"⨆","bigstar":"★","bigtriangledown":"▽","bigtriangleup":"△","biguplus":"⨄","bigvee":"⋁","bigwedge":"⋀","bkarow":"⤍","blacklozenge":"⧫","blacksquare":"▪","blacktriangle":"▴","blacktriangledown":"▾","blacktriangleleft":"◂","blacktriangleright":"▸","blank":"␣","blk12":"▒","blk14":"░","blk34":"▓","block":"█","bne":"=⃥","bnequiv":"≡⃥","bNot":"⫭","bnot":"⌐","Bopf":"𝔹","bopf":"𝕓","bot":"⊥","bottom":"⊥","bowtie":"⋈","boxbox":"⧉","boxdl":"┐","boxdL":"╕","boxDl":"╖","boxDL":"╗","boxdr":"┌","boxdR":"╒","boxDr":"╓","boxDR":"╔","boxh":"─","boxH":"═","boxhd":"┬","boxHd":"╤","boxhD":"╥","boxHD":"╦","boxhu":"┴","boxHu":"╧","boxhU":"╨","boxHU":"╩","boxminus":"⊟","boxplus":"⊞","boxtimes":"⊠","boxul":"┘","boxuL":"╛","boxUl":"╜","boxUL":"╝","boxur":"└","boxuR":"╘","boxUr":"╙","boxUR":"╚","boxv":"│","boxV":"║","boxvh":"┼","boxvH":"╪","boxVh":"╫","boxVH":"╬","boxvl":"┤","boxvL":"╡","boxVl":"╢","boxVL":"╣","boxvr":"├","boxvR":"╞","boxVr":"╟","boxVR":"╠","bprime":"‵","breve":"˘","Breve":"˘","brvbar":"¦","bscr":"𝒷","Bscr":"ℬ","bsemi":"⁏","bsim":"∽","bsime":"⋍","bsolb":"⧅","bsol":"\\","bsolhsub":"⟈","bull":"•","bullet":"•","bump":"≎","bumpE":"⪮","bumpe":"≏","Bumpeq":"≎","bumpeq":"≏","Cacute":"Ć","cacute":"ć","capand":"⩄","capbrcup":"⩉","capcap":"⩋","cap":"∩","Cap":"⋒","capcup":"⩇","capdot":"⩀","CapitalDifferentialD":"ⅅ","caps":"∩︀","caret":"⁁","caron":"ˇ","Cayleys":"ℭ","ccaps":"⩍","Ccaron":"Č","ccaron":"č","Ccedil":"Ç","ccedil":"ç","Ccirc":"Ĉ","ccirc":"ĉ","Cconint":"∰","ccups":"⩌","ccupssm":"⩐","Cdot":"Ċ","cdot":"ċ","cedil":"¸","Cedilla":"¸","cemptyv":"⦲","cent":"¢","centerdot":"·","CenterDot":"·","cfr":"𝔠","Cfr":"ℭ","CHcy":"Ч","chcy":"ч","check":"✓","checkmark":"✓","Chi":"Χ","chi":"χ","circ":"ˆ","circeq":"≗","circlearrowleft":"↺","circlearrowright":"↻","circledast":"⊛","circledcirc":"⊚","circleddash":"⊝","CircleDot":"⊙","circledR":"®","circledS":"Ⓢ","CircleMinus":"⊖","CirclePlus":"⊕","CircleTimes":"⊗","cir":"○","cirE":"⧃","cire":"≗","cirfnint":"⨐","cirmid":"⫯","cirscir":"⧂","ClockwiseContourIntegral":"∲","CloseCurlyDoubleQuote":"”","CloseCurlyQuote":"’","clubs":"♣","clubsuit":"♣","colon":":","Colon":"∷","Colone":"⩴","colone":"≔","coloneq":"≔","comma":",","commat":"@","comp":"∁","compfn":"∘","complement":"∁","complexes":"ℂ","cong":"≅","congdot":"⩭","Congruent":"≡","conint":"∮","Conint":"∯","ContourIntegral":"∮","copf":"𝕔","Copf":"ℂ","coprod":"∐","Coproduct":"∐","copy":"©","COPY":"©","copysr":"℗","CounterClockwiseContourIntegral":"∳","crarr":"↵","cross":"✗","Cross":"⨯","Cscr":"𝒞","cscr":"𝒸","csub":"⫏","csube":"⫑","csup":"⫐","csupe":"⫒","ctdot":"⋯","cudarrl":"⤸","cudarrr":"⤵","cuepr":"⋞","cuesc":"⋟","cularr":"↶","cularrp":"⤽","cupbrcap":"⩈","cupcap":"⩆","CupCap":"≍","cup":"∪","Cup":"⋓","cupcup":"⩊","cupdot":"⊍","cupor":"⩅","cups":"∪︀","curarr":"↷","curarrm":"⤼","curlyeqprec":"⋞","curlyeqsucc":"⋟","curlyvee":"⋎","curlywedge":"⋏","curren":"¤","curvearrowleft":"↶","curvearrowright":"↷","cuvee":"⋎","cuwed":"⋏","cwconint":"∲","cwint":"∱","cylcty":"⌭","dagger":"†","Dagger":"‡","daleth":"ℸ","darr":"↓","Darr":"↡","dArr":"⇓","dash":"‐","Dashv":"⫤","dashv":"⊣","dbkarow":"⤏","dblac":"˝","Dcaron":"Ď","dcaron":"ď","Dcy":"Д","dcy":"д","ddagger":"‡","ddarr":"⇊","DD":"ⅅ","dd":"ⅆ","DDotrahd":"⤑","ddotseq":"⩷","deg":"°","Del":"∇","Delta":"Δ","delta":"δ","demptyv":"⦱","dfisht":"⥿","Dfr":"𝔇","dfr":"𝔡","dHar":"⥥","dharl":"⇃","dharr":"⇂","DiacriticalAcute":"´","DiacriticalDot":"˙","DiacriticalDoubleAcute":"˝","DiacriticalGrave":"`","DiacriticalTilde":"˜","diam":"⋄","diamond":"⋄","Diamond":"⋄","diamondsuit":"♦","diams":"♦","die":"¨","DifferentialD":"ⅆ","digamma":"ϝ","disin":"⋲","div":"÷","divide":"÷","divideontimes":"⋇","divonx":"⋇","DJcy":"Ђ","djcy":"ђ","dlcorn":"⌞","dlcrop":"⌍","dollar":"$","Dopf":"𝔻","dopf":"𝕕","Dot":"¨","dot":"˙","DotDot":"⃜","doteq":"≐","doteqdot":"≑","DotEqual":"≐","dotminus":"∸","dotplus":"∔","dotsquare":"⊡","doublebarwedge":"⌆","DoubleContourIntegral":"∯","DoubleDot":"¨","DoubleDownArrow":"⇓","DoubleLeftArrow":"⇐","DoubleLeftRightArrow":"⇔","DoubleLeftTee":"⫤","DoubleLongLeftArrow":"⟸","DoubleLongLeftRightArrow":"⟺","DoubleLongRightArrow":"⟹","DoubleRightArrow":"⇒","DoubleRightTee":"⊨","DoubleUpArrow":"⇑","DoubleUpDownArrow":"⇕","DoubleVerticalBar":"∥","DownArrowBar":"⤓","downarrow":"↓","DownArrow":"↓","Downarrow":"⇓","DownArrowUpArrow":"⇵","DownBreve":"̑","downdownarrows":"⇊","downharpoonleft":"⇃","downharpoonright":"⇂","DownLeftRightVector":"⥐","DownLeftTeeVector":"⥞","DownLeftVectorBar":"⥖","DownLeftVector":"↽","DownRightTeeVector":"⥟","DownRightVectorBar":"⥗","DownRightVector":"⇁","DownTeeArrow":"↧","DownTee":"⊤","drbkarow":"⤐","drcorn":"⌟","drcrop":"⌌","Dscr":"𝒟","dscr":"𝒹","DScy":"Ѕ","dscy":"ѕ","dsol":"⧶","Dstrok":"Đ","dstrok":"đ","dtdot":"⋱","dtri":"▿","dtrif":"▾","duarr":"⇵","duhar":"⥯","dwangle":"⦦","DZcy":"Џ","dzcy":"џ","dzigrarr":"⟿","Eacute":"É","eacute":"é","easter":"⩮","Ecaron":"Ě","ecaron":"ě","Ecirc":"Ê","ecirc":"ê","ecir":"≖","ecolon":"≕","Ecy":"Э","ecy":"э","eDDot":"⩷","Edot":"Ė","edot":"ė","eDot":"≑","ee":"ⅇ","efDot":"≒","Efr":"𝔈","efr":"𝔢","eg":"⪚","Egrave":"È","egrave":"è","egs":"⪖","egsdot":"⪘","el":"⪙","Element":"∈","elinters":"⏧","ell":"ℓ","els":"⪕","elsdot":"⪗","Emacr":"Ē","emacr":"ē","empty":"∅","emptyset":"∅","EmptySmallSquare":"◻","emptyv":"∅","EmptyVerySmallSquare":"▫","emsp13":" ","emsp14":" ","emsp":" ","ENG":"Ŋ","eng":"ŋ","ensp":" ","Eogon":"Ę","eogon":"ę","Eopf":"𝔼","eopf":"𝕖","epar":"⋕","eparsl":"⧣","eplus":"⩱","epsi":"ε","Epsilon":"Ε","epsilon":"ε","epsiv":"ϵ","eqcirc":"≖","eqcolon":"≕","eqsim":"≂","eqslantgtr":"⪖","eqslantless":"⪕","Equal":"⩵","equals":"=","EqualTilde":"≂","equest":"≟","Equilibrium":"⇌","equiv":"≡","equivDD":"⩸","eqvparsl":"⧥","erarr":"⥱","erDot":"≓","escr":"ℯ","Escr":"ℰ","esdot":"≐","Esim":"⩳","esim":"≂","Eta":"Η","eta":"η","ETH":"Ð","eth":"ð","Euml":"Ë","euml":"ë","euro":"€","excl":"!","exist":"∃","Exists":"∃","expectation":"ℰ","exponentiale":"ⅇ","ExponentialE":"ⅇ","fallingdotseq":"≒","Fcy":"Ф","fcy":"ф","female":"♀","ffilig":"ﬃ","fflig":"ﬀ","ffllig":"ﬄ","Ffr":"𝔉","ffr":"𝔣","filig":"ﬁ","FilledSmallSquare":"◼","FilledVerySmallSquare":"▪","fjlig":"fj","flat":"♭","fllig":"ﬂ","fltns":"▱","fnof":"ƒ","Fopf":"𝔽","fopf":"𝕗","forall":"∀","ForAll":"∀","fork":"⋔","forkv":"⫙","Fouriertrf":"ℱ","fpartint":"⨍","frac12":"½","frac13":"⅓","frac14":"¼","frac15":"⅕","frac16":"⅙","frac18":"⅛","frac23":"⅔","frac25":"⅖","frac34":"¾","frac35":"⅗","frac38":"⅜","frac45":"⅘","frac56":"⅚","frac58":"⅝","frac78":"⅞","frasl":"⁄","frown":"⌢","fscr":"𝒻","Fscr":"ℱ","gacute":"ǵ","Gamma":"Γ","gamma":"γ","Gammad":"Ϝ","gammad":"ϝ","gap":"⪆","Gbreve":"Ğ","gbreve":"ğ","Gcedil":"Ģ","Gcirc":"Ĝ","gcirc":"ĝ","Gcy":"Г","gcy":"г","Gdot":"Ġ","gdot":"ġ","ge":"≥","gE":"≧","gEl":"⪌","gel":"⋛","geq":"≥","geqq":"≧","geqslant":"⩾","gescc":"⪩","ges":"⩾","gesdot":"⪀","gesdoto":"⪂","gesdotol":"⪄","gesl":"⋛︀","gesles":"⪔","Gfr":"𝔊","gfr":"𝔤","gg":"≫","Gg":"⋙","ggg":"⋙","gimel":"ℷ","GJcy":"Ѓ","gjcy":"ѓ","gla":"⪥","gl":"≷","glE":"⪒","glj":"⪤","gnap":"⪊","gnapprox":"⪊","gne":"⪈","gnE":"≩","gneq":"⪈","gneqq":"≩","gnsim":"⋧","Gopf":"𝔾","gopf":"𝕘","grave":"`","GreaterEqual":"≥","GreaterEqualLess":"⋛","GreaterFullEqual":"≧","GreaterGreater":"⪢","GreaterLess":"≷","GreaterSlantEqual":"⩾","GreaterTilde":"≳","Gscr":"𝒢","gscr":"ℊ","gsim":"≳","gsime":"⪎","gsiml":"⪐","gtcc":"⪧","gtcir":"⩺","gt":">","GT":">","Gt":"≫","gtdot":"⋗","gtlPar":"⦕","gtquest":"⩼","gtrapprox":"⪆","gtrarr":"⥸","gtrdot":"⋗","gtreqless":"⋛","gtreqqless":"⪌","gtrless":"≷","gtrsim":"≳","gvertneqq":"≩︀","gvnE":"≩︀","Hacek":"ˇ","hairsp":" ","half":"½","hamilt":"ℋ","HARDcy":"Ъ","hardcy":"ъ","harrcir":"⥈","harr":"↔","hArr":"⇔","harrw":"↭","Hat":"^","hbar":"ℏ","Hcirc":"Ĥ","hcirc":"ĥ","hearts":"♥","heartsuit":"♥","hellip":"…","hercon":"⊹","hfr":"𝔥","Hfr":"ℌ","HilbertSpace":"ℋ","hksearow":"⤥","hkswarow":"⤦","hoarr":"⇿","homtht":"∻","hookleftarrow":"↩","hookrightarrow":"↪","hopf":"𝕙","Hopf":"ℍ","horbar":"―","HorizontalLine":"─","hscr":"𝒽","Hscr":"ℋ","hslash":"ℏ","Hstrok":"Ħ","hstrok":"ħ","HumpDownHump":"≎","HumpEqual":"≏","hybull":"⁃","hyphen":"‐","Iacute":"Í","iacute":"í","ic":"⁣","Icirc":"Î","icirc":"î","Icy":"И","icy":"и","Idot":"İ","IEcy":"Е","iecy":"е","iexcl":"¡","iff":"⇔","ifr":"𝔦","Ifr":"ℑ","Igrave":"Ì","igrave":"ì","ii":"ⅈ","iiiint":"⨌","iiint":"∭","iinfin":"⧜","iiota":"℩","IJlig":"Ĳ","ijlig":"ĳ","Imacr":"Ī","imacr":"ī","image":"ℑ","ImaginaryI":"ⅈ","imagline":"ℐ","imagpart":"ℑ","imath":"ı","Im":"ℑ","imof":"⊷","imped":"Ƶ","Implies":"⇒","incare":"℅","in":"∈","infin":"∞","infintie":"⧝","inodot":"ı","intcal":"⊺","int":"∫","Int":"∬","integers":"ℤ","Integral":"∫","intercal":"⊺","Intersection":"⋂","intlarhk":"⨗","intprod":"⨼","InvisibleComma":"⁣","InvisibleTimes":"⁢","IOcy":"Ё","iocy":"ё","Iogon":"Į","iogon":"į","Iopf":"𝕀","iopf":"𝕚","Iota":"Ι","iota":"ι","iprod":"⨼","iquest":"¿","iscr":"𝒾","Iscr":"ℐ","isin":"∈","isindot":"⋵","isinE":"⋹","isins":"⋴","isinsv":"⋳","isinv":"∈","it":"⁢","Itilde":"Ĩ","itilde":"ĩ","Iukcy":"І","iukcy":"і","Iuml":"Ï","iuml":"ï","Jcirc":"Ĵ","jcirc":"ĵ","Jcy":"Й","jcy":"й","Jfr":"𝔍","jfr":"𝔧","jmath":"ȷ","Jopf":"𝕁","jopf":"𝕛","Jscr":"𝒥","jscr":"𝒿","Jsercy":"Ј","jsercy":"ј","Jukcy":"Є","jukcy":"є","Kappa":"Κ","kappa":"κ","kappav":"ϰ","Kcedil":"Ķ","kcedil":"ķ","Kcy":"К","kcy":"к","Kfr":"𝔎","kfr":"𝔨","kgreen":"ĸ","KHcy":"Х","khcy":"х","KJcy":"Ќ","kjcy":"ќ","Kopf":"𝕂","kopf":"𝕜","Kscr":"𝒦","kscr":"𝓀","lAarr":"⇚","Lacute":"Ĺ","lacute":"ĺ","laemptyv":"⦴","lagran":"ℒ","Lambda":"Λ","lambda":"λ","lang":"⟨","Lang":"⟪","langd":"⦑","langle":"⟨","lap":"⪅","Laplacetrf":"ℒ","laquo":"«","larrb":"⇤","larrbfs":"⤟","larr":"←","Larr":"↞","lArr":"⇐","larrfs":"⤝","larrhk":"↩","larrlp":"↫","larrpl":"⤹","larrsim":"⥳","larrtl":"↢","latail":"⤙","lAtail":"⤛","lat":"⪫","late":"⪭","lates":"⪭︀","lbarr":"⤌","lBarr":"⤎","lbbrk":"❲","lbrace":"{","lbrack":"[","lbrke":"⦋","lbrksld":"⦏","lbrkslu":"⦍","Lcaron":"Ľ","lcaron":"ľ","Lcedil":"Ļ","lcedil":"ļ","lceil":"⌈","lcub":"{","Lcy":"Л","lcy":"л","ldca":"⤶","ldquo":"“","ldquor":"„","ldrdhar":"⥧","ldrushar":"⥋","ldsh":"↲","le":"≤","lE":"≦","LeftAngleBracket":"⟨","LeftArrowBar":"⇤","leftarrow":"←","LeftArrow":"←","Leftarrow":"⇐","LeftArrowRightArrow":"⇆","leftarrowtail":"↢","LeftCeiling":"⌈","LeftDoubleBracket":"⟦","LeftDownTeeVector":"⥡","LeftDownVectorBar":"⥙","LeftDownVector":"⇃","LeftFloor":"⌊","leftharpoondown":"↽","leftharpoonup":"↼","leftleftarrows":"⇇","leftrightarrow":"↔","LeftRightArrow":"↔","Leftrightarrow":"⇔","leftrightarrows":"⇆","leftrightharpoons":"⇋","leftrightsquigarrow":"↭","LeftRightVector":"⥎","LeftTeeArrow":"↤","LeftTee":"⊣","LeftTeeVector":"⥚","leftthreetimes":"⋋","LeftTriangleBar":"⧏","LeftTriangle":"⊲","LeftTriangleEqual":"⊴","LeftUpDownVector":"⥑","LeftUpTeeVector":"⥠","LeftUpVectorBar":"⥘","LeftUpVector":"↿","LeftVectorBar":"⥒","LeftVector":"↼","lEg":"⪋","leg":"⋚","leq":"≤","leqq":"≦","leqslant":"⩽","lescc":"⪨","les":"⩽","lesdot":"⩿","lesdoto":"⪁","lesdotor":"⪃","lesg":"⋚︀","lesges":"⪓","lessapprox":"⪅","lessdot":"⋖","lesseqgtr":"⋚","lesseqqgtr":"⪋","LessEqualGreater":"⋚","LessFullEqual":"≦","LessGreater":"≶","lessgtr":"≶","LessLess":"⪡","lesssim":"≲","LessSlantEqual":"⩽","LessTilde":"≲","lfisht":"⥼","lfloor":"⌊","Lfr":"𝔏","lfr":"𝔩","lg":"≶","lgE":"⪑","lHar":"⥢","lhard":"↽","lharu":"↼","lharul":"⥪","lhblk":"▄","LJcy":"Љ","ljcy":"љ","llarr":"⇇","ll":"≪","Ll":"⋘","llcorner":"⌞","Lleftarrow":"⇚","llhard":"⥫","lltri":"◺","Lmidot":"Ŀ","lmidot":"ŀ","lmoustache":"⎰","lmoust":"⎰","lnap":"⪉","lnapprox":"⪉","lne":"⪇","lnE":"≨","lneq":"⪇","lneqq":"≨","lnsim":"⋦","loang":"⟬","loarr":"⇽","lobrk":"⟦","longleftarrow":"⟵","LongLeftArrow":"⟵","Longleftarrow":"⟸","longleftrightarrow":"⟷","LongLeftRightArrow":"⟷","Longleftrightarrow":"⟺","longmapsto":"⟼","longrightarrow":"⟶","LongRightArrow":"⟶","Longrightarrow":"⟹","looparrowleft":"↫","looparrowright":"↬","lopar":"⦅","Lopf":"𝕃","lopf":"𝕝","loplus":"⨭","lotimes":"⨴","lowast":"∗","lowbar":"_","LowerLeftArrow":"↙","LowerRightArrow":"↘","loz":"◊","lozenge":"◊","lozf":"⧫","lpar":"(","lparlt":"⦓","lrarr":"⇆","lrcorner":"⌟","lrhar":"⇋","lrhard":"⥭","lrm":"‎","lrtri":"⊿","lsaquo":"‹","lscr":"𝓁","Lscr":"ℒ","lsh":"↰","Lsh":"↰","lsim":"≲","lsime":"⪍","lsimg":"⪏","lsqb":"[","lsquo":"‘","lsquor":"‚","Lstrok":"Ł","lstrok":"ł","ltcc":"⪦","ltcir":"⩹","lt":"<","LT":"<","Lt":"≪","ltdot":"⋖","lthree":"⋋","ltimes":"⋉","ltlarr":"⥶","ltquest":"⩻","ltri":"◃","ltrie":"⊴","ltrif":"◂","ltrPar":"⦖","lurdshar":"⥊","luruhar":"⥦","lvertneqq":"≨︀","lvnE":"≨︀","macr":"¯","male":"♂","malt":"✠","maltese":"✠","Map":"⤅","map":"↦","mapsto":"↦","mapstodown":"↧","mapstoleft":"↤","mapstoup":"↥","marker":"▮","mcomma":"⨩","Mcy":"М","mcy":"м","mdash":"—","mDDot":"∺","measuredangle":"∡","MediumSpace":" ","Mellintrf":"ℳ","Mfr":"𝔐","mfr":"𝔪","mho":"℧","micro":"µ","midast":"*","midcir":"⫰","mid":"∣","middot":"·","minusb":"⊟","minus":"−","minusd":"∸","minusdu":"⨪","MinusPlus":"∓","mlcp":"⫛","mldr":"…","mnplus":"∓","models":"⊧","Mopf":"𝕄","mopf":"𝕞","mp":"∓","mscr":"𝓂","Mscr":"ℳ","mstpos":"∾","Mu":"Μ","mu":"μ","multimap":"⊸","mumap":"⊸","nabla":"∇","Nacute":"Ń","nacute":"ń","nang":"∠⃒","nap":"≉","napE":"⩰̸","napid":"≋̸","napos":"ŉ","napprox":"≉","natural":"♮","naturals":"ℕ","natur":"♮","nbsp":" ","nbump":"≎̸","nbumpe":"≏̸","ncap":"⩃","Ncaron":"Ň","ncaron":"ň","Ncedil":"Ņ","ncedil":"ņ","ncong":"≇","ncongdot":"⩭̸","ncup":"⩂","Ncy":"Н","ncy":"н","ndash":"–","nearhk":"⤤","nearr":"↗","neArr":"⇗","nearrow":"↗","ne":"≠","nedot":"≐̸","NegativeMediumSpace":"​","NegativeThickSpace":"​","NegativeThinSpace":"​","NegativeVeryThinSpace":"​","nequiv":"≢","nesear":"⤨","nesim":"≂̸","NestedGreaterGreater":"≫","NestedLessLess":"≪","NewLine":"\n","nexist":"∄","nexists":"∄","Nfr":"𝔑","nfr":"𝔫","ngE":"≧̸","nge":"≱","ngeq":"≱","ngeqq":"≧̸","ngeqslant":"⩾̸","nges":"⩾̸","nGg":"⋙̸","ngsim":"≵","nGt":"≫⃒","ngt":"≯","ngtr":"≯","nGtv":"≫̸","nharr":"↮","nhArr":"⇎","nhpar":"⫲","ni":"∋","nis":"⋼","nisd":"⋺","niv":"∋","NJcy":"Њ","njcy":"њ","nlarr":"↚","nlArr":"⇍","nldr":"‥","nlE":"≦̸","nle":"≰","nleftarrow":"↚","nLeftarrow":"⇍","nleftrightarrow":"↮","nLeftrightarrow":"⇎","nleq":"≰","nleqq":"≦̸","nleqslant":"⩽̸","nles":"⩽̸","nless":"≮","nLl":"⋘̸","nlsim":"≴","nLt":"≪⃒","nlt":"≮","nltri":"⋪","nltrie":"⋬","nLtv":"≪̸","nmid":"∤","NoBreak":"⁠","NonBreakingSpace":" ","nopf":"𝕟","Nopf":"ℕ","Not":"⫬","not":"¬","NotCongruent":"≢","NotCupCap":"≭","NotDoubleVerticalBar":"∦","NotElement":"∉","NotEqual":"≠","NotEqualTilde":"≂̸","NotExists":"∄","NotGreater":"≯","NotGreaterEqual":"≱","NotGreaterFullEqual":"≧̸","NotGreaterGreater":"≫̸","NotGreaterLess":"≹","NotGreaterSlantEqual":"⩾̸","NotGreaterTilde":"≵","NotHumpDownHump":"≎̸","NotHumpEqual":"≏̸","notin":"∉","notindot":"⋵̸","notinE":"⋹̸","notinva":"∉","notinvb":"⋷","notinvc":"⋶","NotLeftTriangleBar":"⧏̸","NotLeftTriangle":"⋪","NotLeftTriangleEqual":"⋬","NotLess":"≮","NotLessEqual":"≰","NotLessGreater":"≸","NotLessLess":"≪̸","NotLessSlantEqual":"⩽̸","NotLessTilde":"≴","NotNestedGreaterGreater":"⪢̸","NotNestedLessLess":"⪡̸","notni":"∌","notniva":"∌","notnivb":"⋾","notnivc":"⋽","NotPrecedes":"⊀","NotPrecedesEqual":"⪯̸","NotPrecedesSlantEqual":"⋠","NotReverseElement":"∌","NotRightTriangleBar":"⧐̸","NotRightTriangle":"⋫","NotRightTriangleEqual":"⋭","NotSquareSubset":"⊏̸","NotSquareSubsetEqual":"⋢","NotSquareSuperset":"⊐̸","NotSquareSupersetEqual":"⋣","NotSubset":"⊂⃒","NotSubsetEqual":"⊈","NotSucceeds":"⊁","NotSucceedsEqual":"⪰̸","NotSucceedsSlantEqual":"⋡","NotSucceedsTilde":"≿̸","NotSuperset":"⊃⃒","NotSupersetEqual":"⊉","NotTilde":"≁","NotTildeEqual":"≄","NotTildeFullEqual":"≇","NotTildeTilde":"≉","NotVerticalBar":"∤","nparallel":"∦","npar":"∦","nparsl":"⫽⃥","npart":"∂̸","npolint":"⨔","npr":"⊀","nprcue":"⋠","nprec":"⊀","npreceq":"⪯̸","npre":"⪯̸","nrarrc":"⤳̸","nrarr":"↛","nrArr":"⇏","nrarrw":"↝̸","nrightarrow":"↛","nRightarrow":"⇏","nrtri":"⋫","nrtrie":"⋭","nsc":"⊁","nsccue":"⋡","nsce":"⪰̸","Nscr":"𝒩","nscr":"𝓃","nshortmid":"∤","nshortparallel":"∦","nsim":"≁","nsime":"≄","nsimeq":"≄","nsmid":"∤","nspar":"∦","nsqsube":"⋢","nsqsupe":"⋣","nsub":"⊄","nsubE":"⫅̸","nsube":"⊈","nsubset":"⊂⃒","nsubseteq":"⊈","nsubseteqq":"⫅̸","nsucc":"⊁","nsucceq":"⪰̸","nsup":"⊅","nsupE":"⫆̸","nsupe":"⊉","nsupset":"⊃⃒","nsupseteq":"⊉","nsupseteqq":"⫆̸","ntgl":"≹","Ntilde":"Ñ","ntilde":"ñ","ntlg":"≸","ntriangleleft":"⋪","ntrianglelefteq":"⋬","ntriangleright":"⋫","ntrianglerighteq":"⋭","Nu":"Ν","nu":"ν","num":"#","numero":"№","numsp":" ","nvap":"≍⃒","nvdash":"⊬","nvDash":"⊭","nVdash":"⊮","nVDash":"⊯","nvge":"≥⃒","nvgt":">⃒","nvHarr":"⤄","nvinfin":"⧞","nvlArr":"⤂","nvle":"≤⃒","nvlt":"<⃒","nvltrie":"⊴⃒","nvrArr":"⤃","nvrtrie":"⊵⃒","nvsim":"∼⃒","nwarhk":"⤣","nwarr":"↖","nwArr":"⇖","nwarrow":"↖","nwnear":"⤧","Oacute":"Ó","oacute":"ó","oast":"⊛","Ocirc":"Ô","ocirc":"ô","ocir":"⊚","Ocy":"О","ocy":"о","odash":"⊝","Odblac":"Ő","odblac":"ő","odiv":"⨸","odot":"⊙","odsold":"⦼","OElig":"Œ","oelig":"œ","ofcir":"⦿","Ofr":"𝔒","ofr":"𝔬","ogon":"˛","Ograve":"Ò","ograve":"ò","ogt":"⧁","ohbar":"⦵","ohm":"Ω","oint":"∮","olarr":"↺","olcir":"⦾","olcross":"⦻","oline":"‾","olt":"⧀","Omacr":"Ō","omacr":"ō","Omega":"Ω","omega":"ω","Omicron":"Ο","omicron":"ο","omid":"⦶","ominus":"⊖","Oopf":"𝕆","oopf":"𝕠","opar":"⦷","OpenCurlyDoubleQuote":"“","OpenCurlyQuote":"‘","operp":"⦹","oplus":"⊕","orarr":"↻","Or":"⩔","or":"∨","ord":"⩝","order":"ℴ","orderof":"ℴ","ordf":"ª","ordm":"º","origof":"⊶","oror":"⩖","orslope":"⩗","orv":"⩛","oS":"Ⓢ","Oscr":"𝒪","oscr":"ℴ","Oslash":"Ø","oslash":"ø","osol":"⊘","Otilde":"Õ","otilde":"õ","otimesas":"⨶","Otimes":"⨷","otimes":"⊗","Ouml":"Ö","ouml":"ö","ovbar":"⌽","OverBar":"‾","OverBrace":"⏞","OverBracket":"⎴","OverParenthesis":"⏜","para":"¶","parallel":"∥","par":"∥","parsim":"⫳","parsl":"⫽","part":"∂","PartialD":"∂","Pcy":"П","pcy":"п","percnt":"%","period":".","permil":"‰","perp":"⊥","pertenk":"‱","Pfr":"𝔓","pfr":"𝔭","Phi":"Φ","phi":"φ","phiv":"ϕ","phmmat":"ℳ","phone":"☎","Pi":"Π","pi":"π","pitchfork":"⋔","piv":"ϖ","planck":"ℏ","planckh":"ℎ","plankv":"ℏ","plusacir":"⨣","plusb":"⊞","pluscir":"⨢","plus":"+","plusdo":"∔","plusdu":"⨥","pluse":"⩲","PlusMinus":"±","plusmn":"±","plussim":"⨦","plustwo":"⨧","pm":"±","Poincareplane":"ℌ","pointint":"⨕","popf":"𝕡","Popf":"ℙ","pound":"£","prap":"⪷","Pr":"⪻","pr":"≺","prcue":"≼","precapprox":"⪷","prec":"≺","preccurlyeq":"≼","Precedes":"≺","PrecedesEqual":"⪯","PrecedesSlantEqual":"≼","PrecedesTilde":"≾","preceq":"⪯","precnapprox":"⪹","precneqq":"⪵","precnsim":"⋨","pre":"⪯","prE":"⪳","precsim":"≾","prime":"′","Prime":"″","primes":"ℙ","prnap":"⪹","prnE":"⪵","prnsim":"⋨","prod":"∏","Product":"∏","profalar":"⌮","profline":"⌒","profsurf":"⌓","prop":"∝","Proportional":"∝","Proportion":"∷","propto":"∝","prsim":"≾","prurel":"⊰","Pscr":"𝒫","pscr":"𝓅","Psi":"Ψ","psi":"ψ","puncsp":" ","Qfr":"𝔔","qfr":"𝔮","qint":"⨌","qopf":"𝕢","Qopf":"ℚ","qprime":"⁗","Qscr":"𝒬","qscr":"𝓆","quaternions":"ℍ","quatint":"⨖","quest":"?","questeq":"≟","quot":"\"","QUOT":"\"","rAarr":"⇛","race":"∽̱","Racute":"Ŕ","racute":"ŕ","radic":"√","raemptyv":"⦳","rang":"⟩","Rang":"⟫","rangd":"⦒","range":"⦥","rangle":"⟩","raquo":"»","rarrap":"⥵","rarrb":"⇥","rarrbfs":"⤠","rarrc":"⤳","rarr":"→","Rarr":"↠","rArr":"⇒","rarrfs":"⤞","rarrhk":"↪","rarrlp":"↬","rarrpl":"⥅","rarrsim":"⥴","Rarrtl":"⤖","rarrtl":"↣","rarrw":"↝","ratail":"⤚","rAtail":"⤜","ratio":"∶","rationals":"ℚ","rbarr":"⤍","rBarr":"⤏","RBarr":"⤐","rbbrk":"❳","rbrace":"}","rbrack":"]","rbrke":"⦌","rbrksld":"⦎","rbrkslu":"⦐","Rcaron":"Ř","rcaron":"ř","Rcedil":"Ŗ","rcedil":"ŗ","rceil":"⌉","rcub":"}","Rcy":"Р","rcy":"р","rdca":"⤷","rdldhar":"⥩","rdquo":"”","rdquor":"”","rdsh":"↳","real":"ℜ","realine":"ℛ","realpart":"ℜ","reals":"ℝ","Re":"ℜ","rect":"▭","reg":"®","REG":"®","ReverseElement":"∋","ReverseEquilibrium":"⇋","ReverseUpEquilibrium":"⥯","rfisht":"⥽","rfloor":"⌋","rfr":"𝔯","Rfr":"ℜ","rHar":"⥤","rhard":"⇁","rharu":"⇀","rharul":"⥬","Rho":"Ρ","rho":"ρ","rhov":"ϱ","RightAngleBracket":"⟩","RightArrowBar":"⇥","rightarrow":"→","RightArrow":"→","Rightarrow":"⇒","RightArrowLeftArrow":"⇄","rightarrowtail":"↣","RightCeiling":"⌉","RightDoubleBracket":"⟧","RightDownTeeVector":"⥝","RightDownVectorBar":"⥕","RightDownVector":"⇂","RightFloor":"⌋","rightharpoondown":"⇁","rightharpoonup":"⇀","rightleftarrows":"⇄","rightleftharpoons":"⇌","rightrightarrows":"⇉","rightsquigarrow":"↝","RightTeeArrow":"↦","RightTee":"⊢","RightTeeVector":"⥛","rightthreetimes":"⋌","RightTriangleBar":"⧐","RightTriangle":"⊳","RightTriangleEqual":"⊵","RightUpDownVector":"⥏","RightUpTeeVector":"⥜","RightUpVectorBar":"⥔","RightUpVector":"↾","RightVectorBar":"⥓","RightVector":"⇀","ring":"˚","risingdotseq":"≓","rlarr":"⇄","rlhar":"⇌","rlm":"‏","rmoustache":"⎱","rmoust":"⎱","rnmid":"⫮","roang":"⟭","roarr":"⇾","robrk":"⟧","ropar":"⦆","ropf":"𝕣","Ropf":"ℝ","roplus":"⨮","rotimes":"⨵","RoundImplies":"⥰","rpar":")","rpargt":"⦔","rppolint":"⨒","rrarr":"⇉","Rrightarrow":"⇛","rsaquo":"›","rscr":"𝓇","Rscr":"ℛ","rsh":"↱","Rsh":"↱","rsqb":"]","rsquo":"’","rsquor":"’","rthree":"⋌","rtimes":"⋊","rtri":"▹","rtrie":"⊵","rtrif":"▸","rtriltri":"⧎","RuleDelayed":"⧴","ruluhar":"⥨","rx":"℞","Sacute":"Ś","sacute":"ś","sbquo":"‚","scap":"⪸","Scaron":"Š","scaron":"š","Sc":"⪼","sc":"≻","sccue":"≽","sce":"⪰","scE":"⪴","Scedil":"Ş","scedil":"ş","Scirc":"Ŝ","scirc":"ŝ","scnap":"⪺","scnE":"⪶","scnsim":"⋩","scpolint":"⨓","scsim":"≿","Scy":"С","scy":"с","sdotb":"⊡","sdot":"⋅","sdote":"⩦","searhk":"⤥","searr":"↘","seArr":"⇘","searrow":"↘","sect":"§","semi":";","seswar":"⤩","setminus":"∖","setmn":"∖","sext":"✶","Sfr":"𝔖","sfr":"𝔰","sfrown":"⌢","sharp":"♯","SHCHcy":"Щ","shchcy":"щ","SHcy":"Ш","shcy":"ш","ShortDownArrow":"↓","ShortLeftArrow":"←","shortmid":"∣","shortparallel":"∥","ShortRightArrow":"→","ShortUpArrow":"↑","shy":"­","Sigma":"Σ","sigma":"σ","sigmaf":"ς","sigmav":"ς","sim":"∼","simdot":"⩪","sime":"≃","simeq":"≃","simg":"⪞","simgE":"⪠","siml":"⪝","simlE":"⪟","simne":"≆","simplus":"⨤","simrarr":"⥲","slarr":"←","SmallCircle":"∘","smallsetminus":"∖","smashp":"⨳","smeparsl":"⧤","smid":"∣","smile":"⌣","smt":"⪪","smte":"⪬","smtes":"⪬︀","SOFTcy":"Ь","softcy":"ь","solbar":"⌿","solb":"⧄","sol":"/","Sopf":"𝕊","sopf":"𝕤","spades":"♠","spadesuit":"♠","spar":"∥","sqcap":"⊓","sqcaps":"⊓︀","sqcup":"⊔","sqcups":"⊔︀","Sqrt":"√","sqsub":"⊏","sqsube":"⊑","sqsubset":"⊏","sqsubseteq":"⊑","sqsup":"⊐","sqsupe":"⊒","sqsupset":"⊐","sqsupseteq":"⊒","square":"□","Square":"□","SquareIntersection":"⊓","SquareSubset":"⊏","SquareSubsetEqual":"⊑","SquareSuperset":"⊐","SquareSupersetEqual":"⊒","SquareUnion":"⊔","squarf":"▪","squ":"□","squf":"▪","srarr":"→","Sscr":"𝒮","sscr":"𝓈","ssetmn":"∖","ssmile":"⌣","sstarf":"⋆","Star":"⋆","star":"☆","starf":"★","straightepsilon":"ϵ","straightphi":"ϕ","strns":"¯","sub":"⊂","Sub":"⋐","subdot":"⪽","subE":"⫅","sube":"⊆","subedot":"⫃","submult":"⫁","subnE":"⫋","subne":"⊊","subplus":"⪿","subrarr":"⥹","subset":"⊂","Subset":"⋐","subseteq":"⊆","subseteqq":"⫅","SubsetEqual":"⊆","subsetneq":"⊊","subsetneqq":"⫋","subsim":"⫇","subsub":"⫕","subsup":"⫓","succapprox":"⪸","succ":"≻","succcurlyeq":"≽","Succeeds":"≻","SucceedsEqual":"⪰","SucceedsSlantEqual":"≽","SucceedsTilde":"≿","succeq":"⪰","succnapprox":"⪺","succneqq":"⪶","succnsim":"⋩","succsim":"≿","SuchThat":"∋","sum":"∑","Sum":"∑","sung":"♪","sup1":"¹","sup2":"²","sup3":"³","sup":"⊃","Sup":"⋑","supdot":"⪾","supdsub":"⫘","supE":"⫆","supe":"⊇","supedot":"⫄","Superset":"⊃","SupersetEqual":"⊇","suphsol":"⟉","suphsub":"⫗","suplarr":"⥻","supmult":"⫂","supnE":"⫌","supne":"⊋","supplus":"⫀","supset":"⊃","Supset":"⋑","supseteq":"⊇","supseteqq":"⫆","supsetneq":"⊋","supsetneqq":"⫌","supsim":"⫈","supsub":"⫔","supsup":"⫖","swarhk":"⤦","swarr":"↙","swArr":"⇙","swarrow":"↙","swnwar":"⤪","szlig":"ß","Tab":"\t","target":"⌖","Tau":"Τ","tau":"τ","tbrk":"⎴","Tcaron":"Ť","tcaron":"ť","Tcedil":"Ţ","tcedil":"ţ","Tcy":"Т","tcy":"т","tdot":"⃛","telrec":"⌕","Tfr":"𝔗","tfr":"𝔱","there4":"∴","therefore":"∴","Therefore":"∴","Theta":"Θ","theta":"θ","thetasym":"ϑ","thetav":"ϑ","thickapprox":"≈","thicksim":"∼","ThickSpace":"  ","ThinSpace":" ","thinsp":" ","thkap":"≈","thksim":"∼","THORN":"Þ","thorn":"þ","tilde":"˜","Tilde":"∼","TildeEqual":"≃","TildeFullEqual":"≅","TildeTilde":"≈","timesbar":"⨱","timesb":"⊠","times":"×","timesd":"⨰","tint":"∭","toea":"⤨","topbot":"⌶","topcir":"⫱","top":"⊤","Topf":"𝕋","topf":"𝕥","topfork":"⫚","tosa":"⤩","tprime":"‴","trade":"™","TRADE":"™","triangle":"▵","triangledown":"▿","triangleleft":"◃","trianglelefteq":"⊴","triangleq":"≜","triangleright":"▹","trianglerighteq":"⊵","tridot":"◬","trie":"≜","triminus":"⨺","TripleDot":"⃛","triplus":"⨹","trisb":"⧍","tritime":"⨻","trpezium":"⏢","Tscr":"𝒯","tscr":"𝓉","TScy":"Ц","tscy":"ц","TSHcy":"Ћ","tshcy":"ћ","Tstrok":"Ŧ","tstrok":"ŧ","twixt":"≬","twoheadleftarrow":"↞","twoheadrightarrow":"↠","Uacute":"Ú","uacute":"ú","uarr":"↑","Uarr":"↟","uArr":"⇑","Uarrocir":"⥉","Ubrcy":"Ў","ubrcy":"ў","Ubreve":"Ŭ","ubreve":"ŭ","Ucirc":"Û","ucirc":"û","Ucy":"У","ucy":"у","udarr":"⇅","Udblac":"Ű","udblac":"ű","udhar":"⥮","ufisht":"⥾","Ufr":"𝔘","ufr":"𝔲","Ugrave":"Ù","ugrave":"ù","uHar":"⥣","uharl":"↿","uharr":"↾","uhblk":"▀","ulcorn":"⌜","ulcorner":"⌜","ulcrop":"⌏","ultri":"◸","Umacr":"Ū","umacr":"ū","uml":"¨","UnderBar":"_","UnderBrace":"⏟","UnderBracket":"⎵","UnderParenthesis":"⏝","Union":"⋃","UnionPlus":"⊎","Uogon":"Ų","uogon":"ų","Uopf":"𝕌","uopf":"𝕦","UpArrowBar":"⤒","uparrow":"↑","UpArrow":"↑","Uparrow":"⇑","UpArrowDownArrow":"⇅","updownarrow":"↕","UpDownArrow":"↕","Updownarrow":"⇕","UpEquilibrium":"⥮","upharpoonleft":"↿","upharpoonright":"↾","uplus":"⊎","UpperLeftArrow":"↖","UpperRightArrow":"↗","upsi":"υ","Upsi":"ϒ","upsih":"ϒ","Upsilon":"Υ","upsilon":"υ","UpTeeArrow":"↥","UpTee":"⊥","upuparrows":"⇈","urcorn":"⌝","urcorner":"⌝","urcrop":"⌎","Uring":"Ů","uring":"ů","urtri":"◹","Uscr":"𝒰","uscr":"𝓊","utdot":"⋰","Utilde":"Ũ","utilde":"ũ","utri":"▵","utrif":"▴","uuarr":"⇈","Uuml":"Ü","uuml":"ü","uwangle":"⦧","vangrt":"⦜","varepsilon":"ϵ","varkappa":"ϰ","varnothing":"∅","varphi":"ϕ","varpi":"ϖ","varpropto":"∝","varr":"↕","vArr":"⇕","varrho":"ϱ","varsigma":"ς","varsubsetneq":"⊊︀","varsubsetneqq":"⫋︀","varsupsetneq":"⊋︀","varsupsetneqq":"⫌︀","vartheta":"ϑ","vartriangleleft":"⊲","vartriangleright":"⊳","vBar":"⫨","Vbar":"⫫","vBarv":"⫩","Vcy":"В","vcy":"в","vdash":"⊢","vDash":"⊨","Vdash":"⊩","VDash":"⊫","Vdashl":"⫦","veebar":"⊻","vee":"∨","Vee":"⋁","veeeq":"≚","vellip":"⋮","verbar":"|","Verbar":"‖","vert":"|","Vert":"‖","VerticalBar":"∣","VerticalLine":"|","VerticalSeparator":"❘","VerticalTilde":"≀","VeryThinSpace":" ","Vfr":"𝔙","vfr":"𝔳","vltri":"⊲","vnsub":"⊂⃒","vnsup":"⊃⃒","Vopf":"𝕍","vopf":"𝕧","vprop":"∝","vrtri":"⊳","Vscr":"𝒱","vscr":"𝓋","vsubnE":"⫋︀","vsubne":"⊊︀","vsupnE":"⫌︀","vsupne":"⊋︀","Vvdash":"⊪","vzigzag":"⦚","Wcirc":"Ŵ","wcirc":"ŵ","wedbar":"⩟","wedge":"∧","Wedge":"⋀","wedgeq":"≙","weierp":"℘","Wfr":"𝔚","wfr":"𝔴","Wopf":"𝕎","wopf":"𝕨","wp":"℘","wr":"≀","wreath":"≀","Wscr":"𝒲","wscr":"𝓌","xcap":"⋂","xcirc":"◯","xcup":"⋃","xdtri":"▽","Xfr":"𝔛","xfr":"𝔵","xharr":"⟷","xhArr":"⟺","Xi":"Ξ","xi":"ξ","xlarr":"⟵","xlArr":"⟸","xmap":"⟼","xnis":"⋻","xodot":"⨀","Xopf":"𝕏","xopf":"𝕩","xoplus":"⨁","xotime":"⨂","xrarr":"⟶","xrArr":"⟹","Xscr":"𝒳","xscr":"𝓍","xsqcup":"⨆","xuplus":"⨄","xutri":"△","xvee":"⋁","xwedge":"⋀","Yacute":"Ý","yacute":"ý","YAcy":"Я","yacy":"я","Ycirc":"Ŷ","ycirc":"ŷ","Ycy":"Ы","ycy":"ы","yen":"¥","Yfr":"𝔜","yfr":"𝔶","YIcy":"Ї","yicy":"ї","Yopf":"𝕐","yopf":"𝕪","Yscr":"𝒴","yscr":"𝓎","YUcy":"Ю","yucy":"ю","yuml":"ÿ","Yuml":"Ÿ","Zacute":"Ź","zacute":"ź","Zcaron":"Ž","zcaron":"ž","Zcy":"З","zcy":"з","Zdot":"Ż","zdot":"ż","zeetrf":"ℨ","ZeroWidthSpace":"​","Zeta":"Ζ","zeta":"ζ","zfr":"𝔷","Zfr":"ℨ","ZHcy":"Ж","zhcy":"ж","zigrarr":"⇝","zopf":"𝕫","Zopf":"ℤ","Zscr":"𝒵","zscr":"𝓏","zwj":"‍","zwnj":"‌"}
 
 /***/ },
 
-/***/ 457:
+/***/ 458:
 /***/ function(module, exports) {
 
 	module.exports = {"Aacute":"Á","aacute":"á","Acirc":"Â","acirc":"â","acute":"´","AElig":"Æ","aelig":"æ","Agrave":"À","agrave":"à","amp":"&","AMP":"&","Aring":"Å","aring":"å","Atilde":"Ã","atilde":"ã","Auml":"Ä","auml":"ä","brvbar":"¦","Ccedil":"Ç","ccedil":"ç","cedil":"¸","cent":"¢","copy":"©","COPY":"©","curren":"¤","deg":"°","divide":"÷","Eacute":"É","eacute":"é","Ecirc":"Ê","ecirc":"ê","Egrave":"È","egrave":"è","ETH":"Ð","eth":"ð","Euml":"Ë","euml":"ë","frac12":"½","frac14":"¼","frac34":"¾","gt":">","GT":">","Iacute":"Í","iacute":"í","Icirc":"Î","icirc":"î","iexcl":"¡","Igrave":"Ì","igrave":"ì","iquest":"¿","Iuml":"Ï","iuml":"ï","laquo":"«","lt":"<","LT":"<","macr":"¯","micro":"µ","middot":"·","nbsp":" ","not":"¬","Ntilde":"Ñ","ntilde":"ñ","Oacute":"Ó","oacute":"ó","Ocirc":"Ô","ocirc":"ô","Ograve":"Ò","ograve":"ò","ordf":"ª","ordm":"º","Oslash":"Ø","oslash":"ø","Otilde":"Õ","otilde":"õ","Ouml":"Ö","ouml":"ö","para":"¶","plusmn":"±","pound":"£","quot":"\"","QUOT":"\"","raquo":"»","reg":"®","REG":"®","sect":"§","shy":"­","sup1":"¹","sup2":"²","sup3":"³","szlig":"ß","THORN":"Þ","thorn":"þ","times":"×","Uacute":"Ú","uacute":"ú","Ucirc":"Û","ucirc":"û","Ugrave":"Ù","ugrave":"ù","uml":"¨","Uuml":"Ü","uuml":"ü","Yacute":"Ý","yacute":"ý","yen":"¥","yuml":"ÿ"}
 
 /***/ },
 
-/***/ 458:
+/***/ 459:
 /***/ function(module, exports) {
 
 	module.exports = {"amp":"&","apos":"'","gt":">","lt":"<","quot":"\""}
 
 /***/ },
 
-/***/ 459:
+/***/ 460:
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -2763,7 +3148,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 460:
+/***/ 461:
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -3072,14 +3457,14 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 461:
+/***/ 462:
 /***/ function(module, exports, __webpack_require__) {
 
-	var ElementType = __webpack_require__(462);
+	var ElementType = __webpack_require__(463);
 
 	var re_whitespace = /\s+/g;
-	var NodePrototype = __webpack_require__(463);
-	var ElementPrototype = __webpack_require__(464);
+	var NodePrototype = __webpack_require__(464);
+	var ElementPrototype = __webpack_require__(465);
 
 	function DomHandler(callback, options, elementCB){
 		if(typeof callback === "object"){
@@ -3296,7 +3681,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 462:
+/***/ 463:
 /***/ function(module, exports) {
 
 	//Types of elements found in the DOM
@@ -3318,7 +3703,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 463:
+/***/ 464:
 /***/ function(module, exports) {
 
 	// This object will be used as the prototype for Nodes when creating a
@@ -3369,11 +3754,11 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 464:
+/***/ 465:
 /***/ function(module, exports, __webpack_require__) {
 
 	// DOM-Level-1-compliant structure
-	var NodePrototype = __webpack_require__(463);
+	var NodePrototype = __webpack_require__(464);
 	var ElementPrototype = module.exports = Object.create(NodePrototype);
 
 	var domLvl1 = {
@@ -3396,10 +3781,10 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 465:
+/***/ 466:
 /***/ function(module, exports, __webpack_require__) {
 
-	var index = __webpack_require__(451),
+	var index = __webpack_require__(452),
 	    DomHandler = index.DomHandler,
 	    DomUtils = index.DomUtils;
 
@@ -3408,7 +3793,7 @@ webpackJsonp([0],{
 		this.init(callback, options);
 	}
 
-	__webpack_require__(459)(FeedHandler, DomHandler);
+	__webpack_require__(460)(FeedHandler, DomHandler);
 
 	FeedHandler.prototype.init = DomHandler;
 
@@ -3498,18 +3883,18 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 466:
+/***/ 467:
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = Stream;
 
-	var Parser = __webpack_require__(467);
+	var Parser = __webpack_require__(468);
 
 	function Stream(options){
 		Parser.call(this, new Cbs(this), options);
 	}
 
-	__webpack_require__(459)(Stream, Parser);
+	__webpack_require__(460)(Stream, Parser);
 
 	Stream.prototype.readable = true;
 
@@ -3517,7 +3902,7 @@ webpackJsonp([0],{
 		this.scope = scope;
 	}
 
-	var EVENTS = __webpack_require__(451).EVENTS;
+	var EVENTS = __webpack_require__(452).EVENTS;
 
 	Object.keys(EVENTS).forEach(function(name){
 		if(EVENTS[name] === 0){
@@ -3539,15 +3924,15 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 467:
+/***/ 468:
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = Stream;
 
-	var Parser = __webpack_require__(452),
-	    WritableStream = __webpack_require__(468).Writable || __webpack_require__(487).Writable,
-	    StringDecoder = __webpack_require__(488).StringDecoder,
-	    Buffer = __webpack_require__(472).Buffer;
+	var Parser = __webpack_require__(453),
+	    WritableStream = __webpack_require__(469).Writable || __webpack_require__(488).Writable,
+	    StringDecoder = __webpack_require__(489).StringDecoder,
+	    Buffer = __webpack_require__(473).Buffer;
 
 	function Stream(cbs, options){
 		var parser = this._parser = new Parser(cbs, options);
@@ -3560,7 +3945,7 @@ webpackJsonp([0],{
 		});
 	}
 
-	__webpack_require__(459)(Stream, WritableStream);
+	__webpack_require__(460)(Stream, WritableStream);
 
 	WritableStream.prototype._write = function(chunk, encoding, cb){
 		if(chunk instanceof Buffer) chunk = this._decoder.write(chunk);
@@ -3570,7 +3955,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 468:
+/***/ 469:
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -3596,15 +3981,15 @@ webpackJsonp([0],{
 
 	module.exports = Stream;
 
-	var EE = __webpack_require__(460).EventEmitter;
-	var inherits = __webpack_require__(459);
+	var EE = __webpack_require__(461).EventEmitter;
+	var inherits = __webpack_require__(460);
 
 	inherits(Stream, EE);
-	Stream.Readable = __webpack_require__(469);
-	Stream.Writable = __webpack_require__(483);
-	Stream.Duplex = __webpack_require__(484);
-	Stream.Transform = __webpack_require__(485);
-	Stream.PassThrough = __webpack_require__(486);
+	Stream.Readable = __webpack_require__(470);
+	Stream.Writable = __webpack_require__(484);
+	Stream.Duplex = __webpack_require__(485);
+	Stream.Transform = __webpack_require__(486);
+	Stream.PassThrough = __webpack_require__(487);
 
 	// Backwards-compat with node 0.4.x
 	Stream.Stream = Stream;
@@ -3704,25 +4089,25 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 469:
+/***/ 470:
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {exports = module.exports = __webpack_require__(470);
-	exports.Stream = __webpack_require__(468);
+	/* WEBPACK VAR INJECTION */(function(process) {exports = module.exports = __webpack_require__(471);
+	exports.Stream = __webpack_require__(469);
 	exports.Readable = exports;
-	exports.Writable = __webpack_require__(479);
-	exports.Duplex = __webpack_require__(478);
-	exports.Transform = __webpack_require__(481);
-	exports.PassThrough = __webpack_require__(482);
+	exports.Writable = __webpack_require__(480);
+	exports.Duplex = __webpack_require__(479);
+	exports.Transform = __webpack_require__(482);
+	exports.PassThrough = __webpack_require__(483);
 	if (!process.browser && process.env.READABLE_STREAM === 'disable') {
-	  module.exports = __webpack_require__(468);
+	  module.exports = __webpack_require__(469);
 	}
 
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
 
-/***/ 470:
+/***/ 471:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -3749,17 +4134,17 @@ webpackJsonp([0],{
 	module.exports = Readable;
 
 	/*<replacement>*/
-	var isArray = __webpack_require__(471);
+	var isArray = __webpack_require__(472);
 	/*</replacement>*/
 
 
 	/*<replacement>*/
-	var Buffer = __webpack_require__(472).Buffer;
+	var Buffer = __webpack_require__(473).Buffer;
 	/*</replacement>*/
 
 	Readable.ReadableState = ReadableState;
 
-	var EE = __webpack_require__(460).EventEmitter;
+	var EE = __webpack_require__(461).EventEmitter;
 
 	/*<replacement>*/
 	if (!EE.listenerCount) EE.listenerCount = function(emitter, type) {
@@ -3767,18 +4152,18 @@ webpackJsonp([0],{
 	};
 	/*</replacement>*/
 
-	var Stream = __webpack_require__(468);
+	var Stream = __webpack_require__(469);
 
 	/*<replacement>*/
-	var util = __webpack_require__(476);
-	util.inherits = __webpack_require__(459);
+	var util = __webpack_require__(477);
+	util.inherits = __webpack_require__(460);
 	/*</replacement>*/
 
 	var StringDecoder;
 
 
 	/*<replacement>*/
-	var debug = __webpack_require__(477);
+	var debug = __webpack_require__(478);
 	if (debug && debug.debuglog) {
 	  debug = debug.debuglog('stream');
 	} else {
@@ -3790,7 +4175,7 @@ webpackJsonp([0],{
 	util.inherits(Readable, Stream);
 
 	function ReadableState(options, stream) {
-	  var Duplex = __webpack_require__(478);
+	  var Duplex = __webpack_require__(479);
 
 	  options = options || {};
 
@@ -3851,14 +4236,14 @@ webpackJsonp([0],{
 	  this.encoding = null;
 	  if (options.encoding) {
 	    if (!StringDecoder)
-	      StringDecoder = __webpack_require__(480).StringDecoder;
+	      StringDecoder = __webpack_require__(481).StringDecoder;
 	    this.decoder = new StringDecoder(options.encoding);
 	    this.encoding = options.encoding;
 	  }
 	}
 
 	function Readable(options) {
-	  var Duplex = __webpack_require__(478);
+	  var Duplex = __webpack_require__(479);
 
 	  if (!(this instanceof Readable))
 	    return new Readable(options);
@@ -3961,7 +4346,7 @@ webpackJsonp([0],{
 	// backwards compatibility.
 	Readable.prototype.setEncoding = function(enc) {
 	  if (!StringDecoder)
-	    StringDecoder = __webpack_require__(480).StringDecoder;
+	    StringDecoder = __webpack_require__(481).StringDecoder;
 	  this._readableState.decoder = new StringDecoder(enc);
 	  this._readableState.encoding = enc;
 	  return this;
@@ -4681,7 +5066,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 471:
+/***/ 472:
 /***/ function(module, exports) {
 
 	module.exports = Array.isArray || function (arr) {
@@ -4691,7 +5076,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 472:
+/***/ 473:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -4704,9 +5089,9 @@ webpackJsonp([0],{
 
 	'use strict'
 
-	var base64 = __webpack_require__(473)
-	var ieee754 = __webpack_require__(474)
-	var isArray = __webpack_require__(475)
+	var base64 = __webpack_require__(474)
+	var ieee754 = __webpack_require__(475)
+	var isArray = __webpack_require__(476)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -6484,11 +6869,11 @@ webpackJsonp([0],{
 	  return val !== val // eslint-disable-line no-self-compare
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(472).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(473).Buffer, (function() { return this; }())))
 
 /***/ },
 
-/***/ 473:
+/***/ 474:
 /***/ function(module, exports) {
 
 	'use strict'
@@ -6609,7 +6994,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 474:
+/***/ 475:
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -6700,7 +7085,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 475:
+/***/ 476:
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -6712,7 +7097,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 476:
+/***/ 477:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {// Copyright Joyent, Inc. and other Node contributors.
@@ -6823,18 +7208,18 @@ webpackJsonp([0],{
 	  return Object.prototype.toString.call(o);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(472).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(473).Buffer))
 
 /***/ },
 
-/***/ 477:
+/***/ 478:
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
 
-/***/ 478:
+/***/ 479:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -6875,12 +7260,12 @@ webpackJsonp([0],{
 
 
 	/*<replacement>*/
-	var util = __webpack_require__(476);
-	util.inherits = __webpack_require__(459);
+	var util = __webpack_require__(477);
+	util.inherits = __webpack_require__(460);
 	/*</replacement>*/
 
-	var Readable = __webpack_require__(470);
-	var Writable = __webpack_require__(479);
+	var Readable = __webpack_require__(471);
+	var Writable = __webpack_require__(480);
 
 	util.inherits(Duplex, Readable);
 
@@ -6931,7 +7316,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 479:
+/***/ 480:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -6962,18 +7347,18 @@ webpackJsonp([0],{
 	module.exports = Writable;
 
 	/*<replacement>*/
-	var Buffer = __webpack_require__(472).Buffer;
+	var Buffer = __webpack_require__(473).Buffer;
 	/*</replacement>*/
 
 	Writable.WritableState = WritableState;
 
 
 	/*<replacement>*/
-	var util = __webpack_require__(476);
-	util.inherits = __webpack_require__(459);
+	var util = __webpack_require__(477);
+	util.inherits = __webpack_require__(460);
 	/*</replacement>*/
 
-	var Stream = __webpack_require__(468);
+	var Stream = __webpack_require__(469);
 
 	util.inherits(Writable, Stream);
 
@@ -6984,7 +7369,7 @@ webpackJsonp([0],{
 	}
 
 	function WritableState(options, stream) {
-	  var Duplex = __webpack_require__(478);
+	  var Duplex = __webpack_require__(479);
 
 	  options = options || {};
 
@@ -7072,7 +7457,7 @@ webpackJsonp([0],{
 	}
 
 	function Writable(options) {
-	  var Duplex = __webpack_require__(478);
+	  var Duplex = __webpack_require__(479);
 
 	  // Writable ctor is applied to Duplexes, though they're not
 	  // instanceof Writable, they're instanceof Readable.
@@ -7416,7 +7801,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 480:
+/***/ 481:
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -7440,7 +7825,7 @@ webpackJsonp([0],{
 	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 	// USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-	var Buffer = __webpack_require__(472).Buffer;
+	var Buffer = __webpack_require__(473).Buffer;
 
 	var isBufferEncoding = Buffer.isEncoding
 	  || function(encoding) {
@@ -7644,7 +8029,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 481:
+/***/ 482:
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -7713,11 +8098,11 @@ webpackJsonp([0],{
 
 	module.exports = Transform;
 
-	var Duplex = __webpack_require__(478);
+	var Duplex = __webpack_require__(479);
 
 	/*<replacement>*/
-	var util = __webpack_require__(476);
-	util.inherits = __webpack_require__(459);
+	var util = __webpack_require__(477);
+	util.inherits = __webpack_require__(460);
 	/*</replacement>*/
 
 	util.inherits(Transform, Duplex);
@@ -7860,7 +8245,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 482:
+/***/ 483:
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -7890,11 +8275,11 @@ webpackJsonp([0],{
 
 	module.exports = PassThrough;
 
-	var Transform = __webpack_require__(481);
+	var Transform = __webpack_require__(482);
 
 	/*<replacement>*/
-	var util = __webpack_require__(476);
-	util.inherits = __webpack_require__(459);
+	var util = __webpack_require__(477);
+	util.inherits = __webpack_require__(460);
 	/*</replacement>*/
 
 	util.inherits(PassThrough, Transform);
@@ -7913,18 +8298,10 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 483:
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(479)
-
-
-/***/ },
-
 /***/ 484:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(478)
+	module.exports = __webpack_require__(480)
 
 
 /***/ },
@@ -7932,7 +8309,7 @@ webpackJsonp([0],{
 /***/ 485:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(481)
+	module.exports = __webpack_require__(479)
 
 
 /***/ },
@@ -7946,18 +8323,26 @@ webpackJsonp([0],{
 /***/ },
 
 /***/ 487:
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(483)
+
+
+/***/ },
+
+/***/ 488:
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
 
-/***/ 488:
+/***/ 489:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Buffer = __webpack_require__(489).Buffer;
+	var Buffer = __webpack_require__(490).Buffer;
 
 	var isEncoding = Buffer.isEncoding || function (encoding) {
 	  encoding = '' + encoding;
@@ -8230,11 +8615,11 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 489:
+/***/ 490:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable node/no-deprecated-api */
-	var buffer = __webpack_require__(472)
+	var buffer = __webpack_require__(473)
 	var Buffer = buffer.Buffer
 
 	// alternative to using Object.keys for old browsers
@@ -8299,7 +8684,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 490:
+/***/ 491:
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = ProxyHandler;
@@ -8308,7 +8693,7 @@ webpackJsonp([0],{
 		this._cbs = cbs || {};
 	}
 
-	var EVENTS = __webpack_require__(451).EVENTS;
+	var EVENTS = __webpack_require__(452).EVENTS;
 	Object.keys(EVENTS).forEach(function(name){
 		if(EVENTS[name] === 0){
 			name = "on" + name;
@@ -8332,18 +8717,18 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 491:
+/***/ 492:
 /***/ function(module, exports, __webpack_require__) {
 
 	var DomUtils = module.exports;
 
 	[
-		__webpack_require__(492),
-		__webpack_require__(498),
+		__webpack_require__(493),
 		__webpack_require__(499),
 		__webpack_require__(500),
 		__webpack_require__(501),
-		__webpack_require__(502)
+		__webpack_require__(502),
+		__webpack_require__(503)
 	].forEach(function(ext){
 		Object.keys(ext).forEach(function(key){
 			DomUtils[key] = ext[key].bind(DomUtils);
@@ -8353,11 +8738,11 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 492:
+/***/ 493:
 /***/ function(module, exports, __webpack_require__) {
 
-	var ElementType = __webpack_require__(462),
-	    getOuterHTML = __webpack_require__(493),
+	var ElementType = __webpack_require__(463),
+	    getOuterHTML = __webpack_require__(494),
 	    isTag = ElementType.isTag;
 
 	module.exports = {
@@ -8378,191 +8763,6 @@ webpackJsonp([0],{
 		if(elem.type === ElementType.CDATA) return getText(elem.children);
 		if(elem.type === ElementType.Text) return elem.data;
 		return "";
-	}
-
-
-/***/ },
-
-/***/ 493:
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-	  Module dependencies
-	*/
-	var ElementType = __webpack_require__(494);
-	var entities = __webpack_require__(495);
-
-	/*
-	  Boolean Attributes
-	*/
-	var booleanAttributes = {
-	  __proto__: null,
-	  allowfullscreen: true,
-	  async: true,
-	  autofocus: true,
-	  autoplay: true,
-	  checked: true,
-	  controls: true,
-	  default: true,
-	  defer: true,
-	  disabled: true,
-	  hidden: true,
-	  ismap: true,
-	  loop: true,
-	  multiple: true,
-	  muted: true,
-	  open: true,
-	  readonly: true,
-	  required: true,
-	  reversed: true,
-	  scoped: true,
-	  seamless: true,
-	  selected: true,
-	  typemustmatch: true
-	};
-
-	var unencodedElements = {
-	  __proto__: null,
-	  style: true,
-	  script: true,
-	  xmp: true,
-	  iframe: true,
-	  noembed: true,
-	  noframes: true,
-	  plaintext: true,
-	  noscript: true
-	};
-
-	/*
-	  Format attributes
-	*/
-	function formatAttrs(attributes, opts) {
-	  if (!attributes) return;
-
-	  var output = '',
-	      value;
-
-	  // Loop through the attributes
-	  for (var key in attributes) {
-	    value = attributes[key];
-	    if (output) {
-	      output += ' ';
-	    }
-
-	    if (!value && booleanAttributes[key]) {
-	      output += key;
-	    } else {
-	      output += key + '="' + (opts.decodeEntities ? entities.encodeXML(value) : value) + '"';
-	    }
-	  }
-
-	  return output;
-	}
-
-	/*
-	  Self-enclosing tags (stolen from node-htmlparser)
-	*/
-	var singleTag = {
-	  __proto__: null,
-	  area: true,
-	  base: true,
-	  basefont: true,
-	  br: true,
-	  col: true,
-	  command: true,
-	  embed: true,
-	  frame: true,
-	  hr: true,
-	  img: true,
-	  input: true,
-	  isindex: true,
-	  keygen: true,
-	  link: true,
-	  meta: true,
-	  param: true,
-	  source: true,
-	  track: true,
-	  wbr: true,
-	};
-
-
-	var render = module.exports = function(dom, opts) {
-	  if (!Array.isArray(dom) && !dom.cheerio) dom = [dom];
-	  opts = opts || {};
-
-	  var output = '';
-
-	  for(var i = 0; i < dom.length; i++){
-	    var elem = dom[i];
-
-	    if (elem.type === 'root')
-	      output += render(elem.children, opts);
-	    else if (ElementType.isTag(elem))
-	      output += renderTag(elem, opts);
-	    else if (elem.type === ElementType.Directive)
-	      output += renderDirective(elem);
-	    else if (elem.type === ElementType.Comment)
-	      output += renderComment(elem);
-	    else if (elem.type === ElementType.CDATA)
-	      output += renderCdata(elem);
-	    else
-	      output += renderText(elem, opts);
-	  }
-
-	  return output;
-	};
-
-	function renderTag(elem, opts) {
-	  // Handle SVG
-	  if (elem.name === "svg") opts = {decodeEntities: opts.decodeEntities, xmlMode: true};
-
-	  var tag = '<' + elem.name,
-	      attribs = formatAttrs(elem.attribs, opts);
-
-	  if (attribs) {
-	    tag += ' ' + attribs;
-	  }
-
-	  if (
-	    opts.xmlMode
-	    && (!elem.children || elem.children.length === 0)
-	  ) {
-	    tag += '/>';
-	  } else {
-	    tag += '>';
-	    if (elem.children) {
-	      tag += render(elem.children, opts);
-	    }
-
-	    if (!singleTag[elem.name] || opts.xmlMode) {
-	      tag += '</' + elem.name + '>';
-	    }
-	  }
-
-	  return tag;
-	}
-
-	function renderDirective(elem) {
-	  return '<' + elem.data + '>';
-	}
-
-	function renderText(elem, opts) {
-	  var data = elem.data || '';
-
-	  // if entities weren't decoded, no need to encode them back
-	  if (opts.decodeEntities && !(elem.parent && elem.parent.name in unencodedElements)) {
-	    data = entities.encodeXML(data);
-	  }
-
-	  return data;
-	}
-
-	function renderCdata(elem) {
-	  return '<![CDATA[' + elem.children[0].data + ']]>';
-	}
-
-	function renderComment(elem) {
-	  return '<!--' + elem.data + '-->';
 	}
 
 
@@ -8625,10 +8825,30 @@ webpackJsonp([0],{
 /***/ },
 
 /***/ 495:
+/***/ function(module, exports) {
+
+	//Types of elements found in the DOM
+	module.exports = {
+		Text: "text", //Text
+		Directive: "directive", //<? ... ?>
+		Comment: "comment", //<!-- ... -->
+		Script: "script", //<script> tags
+		Style: "style", //<style> tags
+		Tag: "tag", //Any tag
+		CDATA: "cdata", //<![CDATA[ ... ]]>
+
+		isTag: function(elem){
+			return elem.type === "tag" || elem.type === "script" || elem.type === "style";
+		}
+	};
+
+/***/ },
+
+/***/ 496:
 /***/ function(module, exports, __webpack_require__) {
 
-	var encode = __webpack_require__(496),
-	    decode = __webpack_require__(497);
+	var encode = __webpack_require__(497),
+	    decode = __webpack_require__(498);
 
 	exports.decode = function(data, level){
 		return (!level || level <= 0 ? decode.XML : decode.HTML)(data);
@@ -8664,15 +8884,15 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 496:
+/***/ 497:
 /***/ function(module, exports, __webpack_require__) {
 
-	var inverseXML = getInverseObj(__webpack_require__(458)),
+	var inverseXML = getInverseObj(__webpack_require__(459)),
 	    xmlReplacer = getInverseReplacer(inverseXML);
 
 	exports.XML = getInverse(inverseXML, xmlReplacer);
 
-	var inverseHTML = getInverseObj(__webpack_require__(456)),
+	var inverseHTML = getInverseObj(__webpack_require__(457)),
 	    htmlReplacer = getInverseReplacer(inverseHTML);
 
 	exports.HTML = getInverse(inverseHTML, htmlReplacer);
@@ -8744,13 +8964,13 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 497:
+/***/ 498:
 /***/ function(module, exports, __webpack_require__) {
 
-	var entityMap = __webpack_require__(456),
-	    legacyMap = __webpack_require__(457),
-	    xmlMap    = __webpack_require__(458),
-	    decodeCodePoint = __webpack_require__(454);
+	var entityMap = __webpack_require__(457),
+	    legacyMap = __webpack_require__(458),
+	    xmlMap    = __webpack_require__(459),
+	    decodeCodePoint = __webpack_require__(455);
 
 	var decodeXMLStrict  = getStrictDecoder(xmlMap),
 	    decodeHTMLStrict = getStrictDecoder(entityMap);
@@ -8822,7 +9042,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 498:
+/***/ 499:
 /***/ function(module, exports) {
 
 	var getChildren = exports.getChildren = function(elem){
@@ -8853,7 +9073,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 499:
+/***/ 500:
 /***/ function(module, exports) {
 
 	exports.removeElement = function(elem){
@@ -8937,10 +9157,10 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 500:
+/***/ 501:
 /***/ function(module, exports, __webpack_require__) {
 
-	var isTag = __webpack_require__(462).isTag;
+	var isTag = __webpack_require__(463).isTag;
 
 	module.exports = {
 		filter: filter,
@@ -9043,10 +9263,10 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 501:
+/***/ 502:
 /***/ function(module, exports, __webpack_require__) {
 
-	var ElementType = __webpack_require__(462);
+	var ElementType = __webpack_require__(463);
 	var isTag = exports.isTag = ElementType.isTag;
 
 	exports.testElement = function(options, element){
@@ -9137,7 +9357,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 502:
+/***/ 503:
 /***/ function(module, exports) {
 
 	// removeSubsets
@@ -9285,7 +9505,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 503:
+/***/ 504:
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = CollectingHandler;
@@ -9295,7 +9515,7 @@ webpackJsonp([0],{
 		this.events = [];
 	}
 
-	var EVENTS = __webpack_require__(451).EVENTS;
+	var EVENTS = __webpack_require__(452).EVENTS;
 	Object.keys(EVENTS).forEach(function(name){
 		if(EVENTS[name] === 0){
 			name = "on" + name;
@@ -9347,7 +9567,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 504:
+/***/ 505:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9357,7 +9577,7 @@ webpackJsonp([0],{
 	});
 	exports.default = ProcessNodes;
 
-	var _elementTypes = __webpack_require__(505);
+	var _elementTypes = __webpack_require__(506);
 
 	var _elementTypes2 = _interopRequireDefault(_elementTypes);
 
@@ -9401,7 +9621,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 505:
+/***/ 506:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9412,21 +9632,21 @@ webpackJsonp([0],{
 
 	var _ElementType$Text$Ele;
 
-	var _htmlparser = __webpack_require__(451);
+	var _htmlparser = __webpack_require__(452);
 
-	var _TextElementType = __webpack_require__(506);
+	var _TextElementType = __webpack_require__(507);
 
 	var _TextElementType2 = _interopRequireDefault(_TextElementType);
 
-	var _TagElementType = __webpack_require__(507);
+	var _TagElementType = __webpack_require__(508);
 
 	var _TagElementType2 = _interopRequireDefault(_TagElementType);
 
-	var _StyleElementType = __webpack_require__(515);
+	var _StyleElementType = __webpack_require__(516);
 
 	var _StyleElementType2 = _interopRequireDefault(_StyleElementType);
 
-	var _UnsupportedElementType = __webpack_require__(516);
+	var _UnsupportedElementType = __webpack_require__(517);
 
 	var _UnsupportedElementType2 = _interopRequireDefault(_UnsupportedElementType);
 
@@ -9442,7 +9662,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 506:
+/***/ 507:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9465,7 +9685,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 507:
+/***/ 508:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9479,19 +9699,19 @@ webpackJsonp([0],{
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _ProcessNodes = __webpack_require__(504);
+	var _ProcessNodes = __webpack_require__(505);
 
 	var _ProcessNodes2 = _interopRequireDefault(_ProcessNodes);
 
-	var _GeneratePropsFromAttributes = __webpack_require__(508);
+	var _GeneratePropsFromAttributes = __webpack_require__(509);
 
 	var _GeneratePropsFromAttributes2 = _interopRequireDefault(_GeneratePropsFromAttributes);
 
-	var _TransformTagName = __webpack_require__(513);
+	var _TransformTagName = __webpack_require__(514);
 
 	var _TransformTagName2 = _interopRequireDefault(_TransformTagName);
 
-	var _VoidElements = __webpack_require__(514);
+	var _VoidElements = __webpack_require__(515);
 
 	var _VoidElements2 = _interopRequireDefault(_VoidElements);
 
@@ -9524,7 +9744,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 508:
+/***/ 509:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9537,11 +9757,11 @@ webpackJsonp([0],{
 
 	exports.default = GeneratePropsFromAttributes;
 
-	var _HtmlAttributesToReact = __webpack_require__(509);
+	var _HtmlAttributesToReact = __webpack_require__(510);
 
 	var _HtmlAttributesToReact2 = _interopRequireDefault(_HtmlAttributesToReact);
 
-	var _InlineStyleToObject = __webpack_require__(512);
+	var _InlineStyleToObject = __webpack_require__(513);
 
 	var _InlineStyleToObject2 = _interopRequireDefault(_InlineStyleToObject);
 
@@ -9568,7 +9788,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 509:
+/***/ 510:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9578,11 +9798,11 @@ webpackJsonp([0],{
 	});
 	exports.default = HtmlAttributesToReact;
 
-	var _BooleanAttributes = __webpack_require__(510);
+	var _BooleanAttributes = __webpack_require__(511);
 
 	var _BooleanAttributes2 = _interopRequireDefault(_BooleanAttributes);
 
-	var _ReactAttributes = __webpack_require__(511);
+	var _ReactAttributes = __webpack_require__(512);
 
 	var _ReactAttributes2 = _interopRequireDefault(_ReactAttributes);
 
@@ -9635,7 +9855,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 510:
+/***/ 511:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9655,7 +9875,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 511:
+/***/ 512:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9824,7 +10044,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 512:
+/***/ 513:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9888,7 +10108,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 513:
+/***/ 514:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9919,7 +10139,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 514:
+/***/ 515:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9936,7 +10156,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 515:
+/***/ 516:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9950,7 +10170,7 @@ webpackJsonp([0],{
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _GeneratePropsFromAttributes = __webpack_require__(508);
+	var _GeneratePropsFromAttributes = __webpack_require__(509);
 
 	var _GeneratePropsFromAttributes2 = _interopRequireDefault(_GeneratePropsFromAttributes);
 
@@ -9981,7 +10201,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 516:
+/***/ 517:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -10003,15 +10223,14 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 517:
+/***/ 518:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(181), __webpack_require__(280), __webpack_require__(276), __webpack_require__(292), __webpack_require__(521), __webpack_require__(518), __webpack_require__(522), __webpack_require__(432), __webpack_require__(435), __webpack_require__(275)], __WEBPACK_AMD_DEFINE_RESULT__ = function (React, Router, _, MailPoet, Form, StandardNewsletterFields, NotificationNewsletterFields, WelcomeNewsletterFields, Breadcrumb, HelpTooltip, jQuery) {
-
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(181), __webpack_require__(280), __webpack_require__(276), __webpack_require__(292), __webpack_require__(522), __webpack_require__(519), __webpack_require__(523), __webpack_require__(432), __webpack_require__(436), __webpack_require__(275)], __WEBPACK_AMD_DEFINE_RESULT__ = function (React, Router, _, MailPoet, Form, StandardNewsletterFields, NotificationNewsletterFields, WelcomeNewsletterFields, Breadcrumb, HelpTooltip, jQuery) {
 	  var NewsletterSend = React.createClass({
 	    displayName: 'NewsletterSend',
 
@@ -10090,7 +10309,7 @@ webpackJsonp([0],{
 	      if (!this.isValid()) {
 	        jQuery('#mailpoet_newsletter').parsley().validate();
 	      } else {
-	        this._save(e).done(function () {
+	        this.saveNewsletter(e).done(function () {
 	          _this2.setState({ loading: true });
 	        }).done(function (response) {
 	          switch (response.data.type) {
@@ -10104,26 +10323,26 @@ webpackJsonp([0],{
 	                  id: _this2.props.params.id,
 	                  status: 'active'
 	                }
-	              }).done(function (response) {
+	              }).done(function (response2) {
 	                // redirect to listing based on newsletter type
 	                _this2.context.router.push('/' + (_this2.state.item.type || ''));
 	                var opts = _this2.state.item.options;
 	                // display success message depending on newsletter type
-	                if (response.data.type === 'welcome') {
+	                if (response2.data.type === 'welcome') {
 	                  MailPoet.Notice.success(MailPoet.I18n.t('welcomeEmailActivated'));
 	                  MailPoet.trackEvent('Emails > Welcome email activated', {
 	                    'MailPoet Free version': window.mailpoet_version,
 	                    'List type': opts.event,
 	                    Delay: opts.afterTimeNumber + ' ' + opts.afterTimeType
 	                  });
-	                } else if (response.data.type === 'notification') {
+	                } else if (response2.data.type === 'notification') {
 	                  MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
 	                  MailPoet.trackEvent('Emails > Post notifications activated', {
 	                    'MailPoet Free version': window.mailpoet_version,
 	                    Frequency: opts.intervalType
 	                  });
 	                }
-	              }).fail(_this2._showError);
+	              }).fail(_this2.showError);
 	            default:
 	              return MailPoet.Ajax.post({
 	                api_version: window.mailpoet_api_version,
@@ -10132,11 +10351,11 @@ webpackJsonp([0],{
 	                data: {
 	                  newsletter_id: _this2.props.params.id
 	                }
-	              }).done(function (response) {
+	              }).done(function (response2) {
 	                // redirect to listing based on newsletter type
 	                _this2.context.router.push('/' + (_this2.state.item.type || ''));
 
-	                if (response.data.status === 'scheduled') {
+	                if (response2.data.status === 'scheduled') {
 	                  MailPoet.Notice.success(MailPoet.I18n.t('newsletterHasBeenScheduled'));
 	                  MailPoet.trackEvent('Emails > Newsletter sent', {
 	                    scheduled: true,
@@ -10149,9 +10368,9 @@ webpackJsonp([0],{
 	                    'MailPoet Free version': window.mailpoet_version
 	                  });
 	                }
-	              }).fail(_this2._showError);
+	              }).fail(_this2.showError);
 	          }
-	        }).fail(this._showError).always(function () {
+	        }).fail(this.showError).always(function () {
 	          _this2.setState({ loading: false });
 	        });
 	      }
@@ -10164,7 +10383,7 @@ webpackJsonp([0],{
 	      if (!this.isValid()) {
 	        jQuery('#mailpoet_newsletter').parsley().validate();
 	      } else {
-	        this._save(e).done(function () {
+	        this.saveNewsletter(e).done(function () {
 	          _this3.setState({ loading: true });
 	        }).done(function () {
 	          MailPoet.Ajax.post({
@@ -10184,7 +10403,7 @@ webpackJsonp([0],{
 	              }), { scroll: true });
 	            }
 	          });
-	        }).fail(this._showError).always(function () {
+	        }).fail(this.showError).always(function () {
 	          _this3.setState({ loading: false });
 	        });
 	      }
@@ -10195,26 +10414,28 @@ webpackJsonp([0],{
 
 	      e.preventDefault();
 
-	      this._save(e).done(function () {
+	      this.saveNewsletter(e).done(function () {
 	        MailPoet.Notice.success(MailPoet.I18n.t('newsletterUpdated'));
 	      }).done(function () {
 	        _this4.context.router.push('/' + (_this4.state.item.type || ''));
-	      }).fail(this._showError);
+	      }).fail(this.showError);
 	    },
 	    handleRedirectToDesign: function handleRedirectToDesign(e) {
 	      e.preventDefault();
 	      var redirectTo = e.target.href;
 
-	      this._save(e).done(function () {
+	      this.saveNewsletter(e).done(function () {
 	        MailPoet.Notice.success(MailPoet.I18n.t('newsletterUpdated'));
 	      }).done(function () {
 	        window.location = redirectTo;
-	      }).fail(this._showError);
+	      }).fail(this.showError);
 	    },
-	    _save: function _save() {
+	    saveNewsletter: function saveNewsletter() {
 	      var _this5 = this;
 
 	      var data = this.state.item;
+	      
+	      this.state.item.thumbnail_url = $("#field_thumbnail_url").val();
 	      data.queue = undefined;
 	      this.setState({ loading: true });
 
@@ -10231,7 +10452,7 @@ webpackJsonp([0],{
 	        _this5.setState({ loading: false });
 	      });
 	    },
-	    _showError: function _showError(response) {
+	    showError: function showError(response) {
 	      if (response.errors.length > 0) {
 	        MailPoet.Notice.error(response.errors.map(function (error) {
 	          return error.message;
@@ -10308,7 +10529,7 @@ webpackJsonp([0],{
 	            ),
 	            '.'
 	          ),
-	          !isPaused && sendButtonOptions['disabled'] && sendButtonOptions['disabled'] === 'disabled' && React.createElement(HelpTooltip, {
+	          !isPaused && sendButtonOptions.disabled && sendButtonOptions.disabled === 'disabled' && React.createElement(HelpTooltip, {
 	            tooltip: MailPoet.I18n.t('helpTooltipSendEmail'),
 	            tooltipId: 'helpTooltipSendEmail'
 	          })
@@ -10322,13 +10543,12 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 518:
+/***/ 519:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(276), __webpack_require__(429), __webpack_require__(519), __webpack_require__(280)], __WEBPACK_AMD_DEFINE_RESULT__ = function (MailPoet, Hooks, Scheduling, _) {
-
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(276), __webpack_require__(429), __webpack_require__(520), __webpack_require__(280)], __WEBPACK_AMD_DEFINE_RESULT__ = function (MailPoet, Hooks, Scheduling, _) {
 	  var fields = [{
 	    name: 'subject',
 	    label: MailPoet.I18n.t('subjectLine'),
@@ -10423,7 +10643,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 519:
+/***/ 520:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10442,7 +10662,7 @@ webpackJsonp([0],{
 
 	var _formFieldsSelectJsx2 = _interopRequireDefault(_formFieldsSelectJsx);
 
-	var _newslettersSchedulingCommonJsx = __webpack_require__(520);
+	var _newslettersSchedulingCommonJsx = __webpack_require__(521);
 
 	var intervalField = {
 	  name: 'intervalType',
@@ -10472,11 +10692,11 @@ webpackJsonp([0],{
 	var NotificationScheduling = _react2['default'].createClass({
 	  displayName: 'NotificationScheduling',
 
-	  _getCurrentValue: function _getCurrentValue() {
+	  getCurrentValue: function getCurrentValue() {
 	    return this.props.item[this.props.field.name] || {};
 	  },
 	  handleValueChange: function handleValueChange(name, value) {
-	    var oldValue = this._getCurrentValue();
+	    var oldValue = this.getCurrentValue();
 	    var newValue = {};
 
 	    newValue[name] = value;
@@ -10504,7 +10724,7 @@ webpackJsonp([0],{
 	    return this.handleValueChange('nthWeekDay', event.target.value);
 	  },
 	  render: function render() {
-	    var value = this._getCurrentValue();
+	    var value = this.getCurrentValue();
 	    var timeOfDaySelection = undefined;
 	    var weekDaySelection = undefined;
 	    var monthDaySelection = undefined;
@@ -10513,28 +10733,28 @@ webpackJsonp([0],{
 	    if (value.intervalType !== 'immediately') {
 	      timeOfDaySelection = _react2['default'].createElement(_formFieldsSelectJsx2['default'], {
 	        field: timeOfDayField,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleTimeOfDayChange });
 	    }
 
 	    if (value.intervalType === 'weekly' || value.intervalType === 'nthWeekDay') {
 	      weekDaySelection = _react2['default'].createElement(_formFieldsSelectJsx2['default'], {
 	        field: weekDayField,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleWeekDayChange });
 	    }
 
 	    if (value.intervalType === 'monthly') {
 	      monthDaySelection = _react2['default'].createElement(_formFieldsSelectJsx2['default'], {
 	        field: monthDayField,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleMonthDayChange });
 	    }
 
 	    if (value.intervalType === 'nthWeekDay') {
 	      nthWeekDaySelection = _react2['default'].createElement(_formFieldsSelectJsx2['default'], {
 	        field: nthWeekDayField,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleNthWeekDayChange });
 	    }
 
@@ -10543,7 +10763,7 @@ webpackJsonp([0],{
 	      null,
 	      _react2['default'].createElement(_formFieldsSelectJsx2['default'], {
 	        field: intervalField,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleIntervalChange }),
 	      nthWeekDaySelection,
 	      monthDaySelection,
@@ -10557,7 +10777,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 521:
+/***/ 522:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -10567,7 +10787,6 @@ webpackJsonp([0],{
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(275), __webpack_require__(280), __webpack_require__(276), __webpack_require__(429)], __WEBPACK_AMD_DEFINE_RESULT__ = function (React, jq, _, MailPoet, Hooks) {
-
 	  var jQuery = jq;
 
 	  var currentTime = window.mailpoet_current_time || '00:00';
@@ -10700,17 +10919,17 @@ webpackJsonp([0],{
 	  var DateTime = React.createClass({
 	    displayName: 'DateTime',
 
-	    _DATE_TIME_SEPARATOR: ' ',
+	    DATE_TIME_SEPARATOR: ' ',
 	    getInitialState: function getInitialState() {
-	      return this._buildStateFromProps(this.props);
+	      return this.buildStateFromProps(this.props);
 	    },
 	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	      this.setState(this._buildStateFromProps(nextProps));
+	      this.setState(this.buildStateFromProps(nextProps));
 	    },
-	    _buildStateFromProps: function _buildStateFromProps(props) {
+	    buildStateFromProps: function buildStateFromProps(props) {
 	      var value = props.value || defaultDateTime;
 
-	      var _value$split = value.split(this._DATE_TIME_SEPARATOR);
+	      var _value$split = value.split(this.DATE_TIME_SEPARATOR);
 
 	      var _value$split2 = _slicedToArray(_value$split, 2);
 
@@ -10741,7 +10960,7 @@ webpackJsonp([0],{
 	      }
 	    },
 	    getDateTime: function getDateTime() {
-	      return [this.state.date, this.state.time].join(this._DATE_TIME_SEPARATOR);
+	      return [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
 	    },
 	    render: function render() {
 	      return React.createElement(
@@ -10768,14 +10987,14 @@ webpackJsonp([0],{
 	  var StandardScheduling = React.createClass({
 	    displayName: 'StandardScheduling',
 
-	    _getCurrentValue: function _getCurrentValue() {
+	    getCurrentValue: function getCurrentValue() {
 	      return _.defaults(this.props.item[this.props.field.name] || {}, {
 	        isScheduled: '0',
 	        scheduledAt: defaultDateTime
 	      });
 	    },
 	    handleValueChange: function handleValueChange(event) {
-	      var oldValue = this._getCurrentValue();
+	      var oldValue = this.getCurrentValue();
 	      var newValue = {};
 	      newValue[event.target.name] = event.target.value;
 
@@ -10792,7 +11011,7 @@ webpackJsonp([0],{
 	      return this.handleValueChange(changeEvent);
 	    },
 	    isScheduled: function isScheduled() {
-	      return this._getCurrentValue().isScheduled === '1';
+	      return this.getCurrentValue().isScheduled === '1';
 	    },
 	    getDateValidation: function getDateValidation() {
 	      return {
@@ -10810,7 +11029,7 @@ webpackJsonp([0],{
 	          { id: 'mailpoet_scheduling' },
 	          React.createElement(DateTime, {
 	            name: 'scheduledAt',
-	            value: this._getCurrentValue().scheduledAt,
+	            value: this.getCurrentValue().scheduledAt,
 	            onChange: this.handleValueChange,
 	            disabled: this.props.field.disabled,
 	            dateValidation: this.getDateValidation() }),
@@ -10843,6 +11062,89 @@ webpackJsonp([0],{
 	      );
 	    }
 	  });
+	  
+var ThumbnailURLComponant = React.createClass( {
+  	  	  displayName: 'ThumbnailURLComponant',
+  	  	  propTypes: {
+    		iitem: React.PropTypes.shape({
+      		thumbnail_url: React.PropTypes.string.isRequired
+    	  })
+  		  },
+  		  
+  	  	  getInitialState: function getInitialState() {
+	  	  	// alert('getInitialState');
+		    return this.buildStateFromProps(this.props.item.thumbnail_url);
+		  },
+		  buildStateFromProps: function buildStateFromProps(props) {
+		  	// alert('buildStateFromProps');
+		  	
+		    // var value = $( '#field_thumbnail_url' ).val();
+		    var value = props;
+		    return {
+		      thumbnail_url: value
+		    };
+		  },
+		  // componentWillMount: function componentWillMount() {
+		  	// alert('componentWillMount');
+		    // this.setState(this.buildStateFromProps(this.props));
+		  // },
+		  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		  	// alert('componentWillReceiveProps');
+		    //this.setState(this.buildStateFromProps(nextProps));
+		    var value = $( '#field_thumbnail_url' ).val();
+		    this.state;
+		    this.setState({thumbnail_url:"test"});
+		  },
+	    getCurrentValue: function getCurrentValue() {
+	      return _.defaults(this.props.item[this.props.field.name] || {}, {
+ 	        thumbnail_url: ''
+	      });
+	    },
+  		addThumbnail: function addThumbnail( event ){
+	  		  var frame,
+	  		  thumbnailBox = $('#meta-box-id.postbox'), // Your meta box id here
+		      addImgLink = thumbnailBox.find('.upload-custom-img');
+			    event.preventDefault();
+			    // If the media frame already exists, reopen it.
+			    if ( frame ) {
+			        frame.open();
+			        return;
+			    }
+			    // Create a new media frame
+			    frame = window.wp.media({
+			        title: 'Select or Upload Media Of Your Chosen Persuasion',
+			        button: {
+			            text: '이미지 선택'
+			        },
+			        multiple: false  // Set to true to allow multiple files to be selected
+			    });
+			    // When an image is selected in the media frame...
+			    frame.on( 'select', function() {
+			        // Get media attachment details from the frame state
+			        var newsletter = frame.state().get('selection').first().toJSON();
+			        // Send the attachment URL to our custom image input field.
+			        $( '#custom-img-container *').remove();
+			        $( '#custom-img-container').append( '<img src="'+newsletter.url+'" alt="" style="max-width:200px;"/>' );
+			        // Send the attachment id to our hidden input
+			        $( '#field_thumbnail_url' ).attr('value', newsletter.url );
+			        $( '#field_thumbnail_url' ).change();
+			    } );
+			    // Finally, open the modal on click
+			    frame.open();
+		},
+		changeThumbnail : function(e) {
+			// alert('changeThumbnail');
+			// this.setState({thumbnail_url : e.target.value});
+		},
+ 		render: function render() {
+      	return React.createElement( 'div', {id: 'custom-thumbnail-container'},
+      		React.createElement('div', {id: 'custom-img-container'} ),
+    			React.createElement('button', {className: 'upload-custom-img', onClick: this.addThumbnail }, '이미지 추가'),
+    			//React.createElement('input', { name: 'thumbnail_url', type: 'text', value: this.state.thumbnail_url, id: 'field_thumbnail_url', className: 'regular-text', placeholder: '버튼을 클릭해 썸네일 이미지를 추가하세요.', 'data-parsley-required': true, 'data-parsley-required-message': MailPoet.I18n.t('emptyThumbnailurlError') } )
+      	);
+    }
+});
+
 
 	  var fields = [{
 	    name: 'subject',
@@ -10853,7 +11155,39 @@ webpackJsonp([0],{
 	      'data-parsley-required': true,
 	      'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError')
 	    }
-	  }, {
+	  },
+	  // {
+	    // name: 'thumbnailURL',
+	    // type: 'reactComponent', 
+	    // component: thumbnailURL
+	  // },  
+	  // {
+	    // name: 'thumbnail_url',
+	    // label: MailPoet.I18n.t('ThumbnailurlLine'),
+	    // tip: MailPoet.I18n.t('ThumbnailurlTip'),
+	    // type: 'text',
+	    // validation: {
+	      // 'data-parsley-required': true,
+	      // 'data-parsley-required-message': MailPoet.I18n.t('emptyThumbnailurlError')
+	    // }
+	  // },
+	  // {
+	  	// name: 'thumbnail_url',
+	    // label: MailPoet.I18n.t('ThumbnailurlLine'),
+	    // tip: MailPoet.I18n.t('ThumbnailurlTip'),
+    	// type: 'reactComponent', 
+    	// component: ThumbnailURLComponant
+	  // },
+	  // {
+	    	// name: 'thumbnail_url',
+		    // type: 'text',
+		    // placeholder: '버튼을 클릭해 썸네일 이미지를 추가하세요.',
+		    // validation: {
+		      // 'data-parsley-required': true,
+		      // 'data-parsley-required-message': MailPoet.I18n.t('emptyThumbnailurlError')
+		    // }
+	   // },
+	  {
 	    name: 'segments',
 	    label: MailPoet.I18n.t('segments'),
 	    tip: MailPoet.I18n.t('segmentsTip'),
@@ -10937,7 +11271,7 @@ webpackJsonp([0],{
 	      };
 
 	      if (newsletterOptions.status === 'sent' || newsletterOptions.status === 'sending') {
-	        options['disabled'] = 'disabled';
+	        options.disabled = 'disabled';
 	      }
 
 	      return options;
@@ -10947,13 +11281,12 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 522:
+/***/ 523:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(276), __webpack_require__(429), __webpack_require__(523)], __WEBPACK_AMD_DEFINE_RESULT__ = function (MailPoet, Hooks, Scheduling) {
-
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(276), __webpack_require__(429), __webpack_require__(524)], __WEBPACK_AMD_DEFINE_RESULT__ = function (MailPoet, Hooks, Scheduling) {
 	  var fields = [{
 	    name: 'subject',
 	    label: MailPoet.I18n.t('subjectLine'),
@@ -11020,13 +11353,12 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 525:
+/***/ 526:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(181), __webpack_require__(276), __webpack_require__(432)], __WEBPACK_AMD_DEFINE_RESULT__ = function (React, Router, MailPoet, Breadcrumb) {
-
 	  var NewsletterStandard = React.createClass({
 	    displayName: 'NewsletterStandard',
 
@@ -11076,13 +11408,12 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 526:
+/***/ 527:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(280), __webpack_require__(2), __webpack_require__(181), __webpack_require__(276), __webpack_require__(519), __webpack_require__(432)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, React, Router, MailPoet, Scheduling, Breadcrumb) {
-
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(280), __webpack_require__(2), __webpack_require__(181), __webpack_require__(276), __webpack_require__(520), __webpack_require__(432)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_, React, Router, MailPoet, Scheduling, Breadcrumb) {
 	  var field = {
 	    name: 'options',
 	    type: 'reactComponent',
@@ -11172,7 +11503,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 527:
+/***/ 528:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11184,6 +11515,8 @@ webpackJsonp([0],{
 	var _react2 = _interopRequireDefault(_react);
 
 	var _reactRouter = __webpack_require__(181);
+
+	var _reactConfirmAlert = __webpack_require__(435);
 
 	var _classnames = __webpack_require__(277);
 
@@ -11201,13 +11534,13 @@ webpackJsonp([0],{
 
 	var _listingListingJsx2 = _interopRequireDefault(_listingListingJsx);
 
-	var _newslettersListingsTabsJsx = __webpack_require__(528);
+	var _newslettersListingsTabsJsx = __webpack_require__(529);
 
 	var _newslettersListingsTabsJsx2 = _interopRequireDefault(_newslettersListingsTabsJsx);
 
-	var _newslettersListingsMixinsJsx = __webpack_require__(529);
+	var _newslettersListingsMixinsJsx = __webpack_require__(530);
 
-	var mailpoet_tracking_enabled = !!window['mailpoet_tracking_enabled'];
+	var mailpoet_tracking_enabled = !!window.mailpoet_tracking_enabled;
 
 	var messages = {
 	  onTrash: function onTrash(response) {
@@ -11272,8 +11605,19 @@ webpackJsonp([0],{
 	}];
 
 	var confirmEdit = function confirmEdit(newsletter) {
-	  if (!newsletter.queue || newsletter.status != 'sending' || newsletter.queue.status !== null || window.confirm(_mailpoet2['default'].I18n.t('confirmEdit'))) {
+	  var redirectToEditing = function redirectToEditing() {
 	    window.location.href = '?page=mailpoet-newsletter-editor&id=' + newsletter.id;
+	  };
+	  if (!newsletter.queue || newsletter.status != 'sending' || newsletter.queue.status !== null) {
+	    redirectToEditing();
+	  } else {
+	    (0, _reactConfirmAlert.confirmAlert)({
+	      title: _mailpoet2['default'].I18n.t('confirmTitle'),
+	      message: _mailpoet2['default'].I18n.t('confirmEdit'),
+	      confirmLabel: _mailpoet2['default'].I18n.t('confirmLabel'),
+	      cancelLabel: _mailpoet2['default'].I18n.t('cancelLabel'),
+	      onConfirm: redirectToEditing
+	    });
 	  }
 	};
 
@@ -11392,7 +11736,8 @@ webpackJsonp([0],{
 	          { className: 'page-title-action', to: '/new',
 	            onClick: function () {
 	              return _mailpoet2['default'].trackEvent('Emails > Add New', { 'MailPoet Free version': window.mailpoet_version });
-	            }
+	            },
+	            'data-automation-id': 'new_email'
 	          },
 	          _mailpoet2['default'].I18n.t('new')
 	        )
@@ -11423,7 +11768,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 528:
+/***/ 529:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11454,11 +11799,13 @@ webpackJsonp([0],{
 	        name: 'standard',
 	        label: _mailpoet2['default'].I18n.t('tabStandardTitle'),
 	        link: '/standard'
-	      }, {
-	        name: 'welcome',
-	        label: _mailpoet2['default'].I18n.t('tabWelcomeTitle'),
-	        link: '/welcome'
-	      }, {
+	      }, 
+	      // {
+	        // name: 'welcome',
+	        // label: _mailpoet2['default'].I18n.t('tabWelcomeTitle'),
+	        // link: '/welcome'
+	      // }, 
+	      {
 	        name: 'notification',
 	        label: _mailpoet2['default'].I18n.t('tabNotificationTitle'),
 	        link: '/notification'
@@ -11497,7 +11844,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 529:
+/***/ 530:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11542,11 +11889,11 @@ webpackJsonp([0],{
 
 	var _wpJsHooks2 = _interopRequireDefault(_wpJsHooks);
 
-	var _newslettersBadgesStatsJsx = __webpack_require__(530);
+	var _newslettersBadgesStatsJsx = __webpack_require__(531);
 
 	var _newslettersBadgesStatsJsx2 = _interopRequireDefault(_newslettersBadgesStatsJsx);
 
-	var _QueueMixin = {
+	var QueueMixin = {
 	  pauseSending: function pauseSending(newsletter) {
 	    _mailpoet2['default'].Ajax.post({
 	      api_version: window.mailpoet_api_version,
@@ -11692,7 +12039,7 @@ webpackJsonp([0],{
 	  _mailpoet2['default'].trackEvent('User has clicked a CTA to view detailed stats', { 'MailPoet Free version': window.mailpoet_version });
 	};
 
-	var _StatisticsMixin = {
+	var StatisticsMixin = {
 	  renderStatistics: function renderStatistics(newsletter, is_sent, current_time) {
 	    var sent = is_sent;
 	    if (sent === undefined) {
@@ -11894,27 +12241,27 @@ webpackJsonp([0],{
 	      after_content
 	    );
 	  },
-	  addStatsCTAAction: function addStatsCTAAction(actions) {
-	    if (window.mailpoet_premium_active) {
-	      return actions;
-	    }
-	    actions.unshift({
-	      name: 'stats',
-	      link: function link() {
-	        return _react2['default'].createElement(
-	          'a',
-	          { href: 'admin.php?page=mailpoet-premium', onClick: trackStatsCTAClicked },
-	          _mailpoet2['default'].I18n.t('statsListingActionTitle')
-	        );
-	      },
-	      display: function display(newsletter) {
-	        // welcome emails provide explicit total_sent value
-	        var count_processed = newsletter.queue && newsletter.queue.count_processed;
-	        return ~ ~(newsletter.total_sent || count_processed) > 0;
-	      }
-	    });
-	    return actions;
-	  },
+	  // addStatsCTAAction: function addStatsCTAAction(actions) {
+	    // if (window.mailpoet_premium_active) {
+	      // return actions;
+	    // }
+	    // actions.unshift({
+	      // name: 'stats',
+	      // link: function link() {
+	        // return _react2['default'].createElement(
+	          // 'a',
+	          // { href: 'admin.php?page=mailpoet-premium', onClick: trackStatsCTAClicked },
+	          // _mailpoet2['default'].I18n.t('statsListingActionTitle')
+	        // );
+	      // },
+	      // display: function display(newsletter) {
+	        // // welcome emails provide explicit total_sent value
+	        // var count_processed = newsletter.queue && newsletter.queue.count_processed;
+	        // return ~ ~(newsletter.total_sent || count_processed) > 0;
+	      // }
+	    // });
+	    // return actions;
+	  // },
 	  addStatsCTALink: function addStatsCTALink(params) {
 	    if (window.mailpoet_premium_active) {
 	      return params;
@@ -11927,7 +12274,7 @@ webpackJsonp([0],{
 	  }
 	};
 
-	var _MailerMixin = {
+	var MailerMixin = {
 	  checkMailerStatus: function checkMailerStatus(state) {
 	    if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
 	      _mailpoet2['default'].Notice.error('', { 'static': true, id: 'mailpoet_mailer_error' });
@@ -11997,13 +12344,13 @@ webpackJsonp([0],{
 	  }
 	};
 
-	exports.QueueMixin = _QueueMixin;
-	exports.StatisticsMixin = _StatisticsMixin;
-	exports.MailerMixin = _MailerMixin;
+	exports.QueueMixin = QueueMixin;
+	exports.StatisticsMixin = StatisticsMixin;
+	exports.MailerMixin = MailerMixin;
 
 /***/ },
 
-/***/ 533:
+/***/ 534:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12020,11 +12367,11 @@ webpackJsonp([0],{
 
 	var _listingListingJsx2 = _interopRequireDefault(_listingListingJsx);
 
-	var _newslettersListingsTabsJsx = __webpack_require__(528);
+	var _newslettersListingsTabsJsx = __webpack_require__(529);
 
 	var _newslettersListingsTabsJsx2 = _interopRequireDefault(_newslettersListingsTabsJsx);
 
-	var _newslettersListingsMixinsJsx = __webpack_require__(529);
+	var _newslettersListingsMixinsJsx = __webpack_require__(530);
 
 	var _classnames = __webpack_require__(277);
 
@@ -12044,7 +12391,7 @@ webpackJsonp([0],{
 
 	var mailpoet_roles = window.mailpoet_roles || {};
 	var mailpoet_segments = window.mailpoet_segments || {};
-	var mailpoet_tracking_enabled = !!window['mailpoet_tracking_enabled'];
+	var mailpoet_tracking_enabled = !!window.mailpoet_tracking_enabled;
 
 	var messages = {
 	  onTrash: function onTrash(response) {
@@ -12219,8 +12566,8 @@ webpackJsonp([0],{
 
 	      case 'segment':
 	        // get segment
-	        segment = _underscore2['default'].find(mailpoet_segments, function (segment) {
-	          return ~ ~segment.id === ~ ~newsletter.options.segment;
+	        segment = _underscore2['default'].find(mailpoet_segments, function (seg) {
+	          return ~ ~seg.id === ~ ~newsletter.options.segment;
 	        });
 
 	        if (segment === undefined) {
@@ -12323,7 +12670,7 @@ webpackJsonp([0],{
 	        ' ',
 	        _react2['default'].createElement(
 	          _reactRouter.Link,
-	          { className: 'page-title-action', to: '/new' },
+	          { className: 'page-title-action', to: '/new', 'data-automation-id': 'new_email' },
 	          _mailpoet2['default'].I18n.t('new')
 	        )
 	      ),
@@ -12353,7 +12700,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 534:
+/***/ 535:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12370,11 +12717,11 @@ webpackJsonp([0],{
 
 	var _listingListingJsx2 = _interopRequireDefault(_listingListingJsx);
 
-	var _newslettersListingsTabsJsx = __webpack_require__(528);
+	var _newslettersListingsTabsJsx = __webpack_require__(529);
 
 	var _newslettersListingsTabsJsx2 = _interopRequireDefault(_newslettersListingsTabsJsx);
 
-	var _newslettersListingsMixinsJsx = __webpack_require__(529);
+	var _newslettersListingsMixinsJsx = __webpack_require__(530);
 
 	var _classnames = __webpack_require__(277);
 
@@ -12384,7 +12731,7 @@ webpackJsonp([0],{
 
 	var _mailpoet2 = _interopRequireDefault(_mailpoet);
 
-	var _newslettersSchedulingCommonJsx = __webpack_require__(520);
+	var _newslettersSchedulingCommonJsx = __webpack_require__(521);
 
 	var messages = {
 	  onTrash: function onTrash(response) {
@@ -12667,7 +13014,7 @@ webpackJsonp([0],{
 	        ' ',
 	        _react2['default'].createElement(
 	          _reactRouter.Link,
-	          { className: 'page-title-action', to: '/new' },
+	          { className: 'page-title-action', to: '/new', 'data-automation-id': 'new_email' },
 	          _mailpoet2['default'].I18n.t('new')
 	        )
 	      ),
@@ -12697,7 +13044,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 535:
+/***/ 536:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12726,13 +13073,13 @@ webpackJsonp([0],{
 
 	var _listingListingJsx2 = _interopRequireDefault(_listingListingJsx);
 
-	var _newslettersListingsTabsJsx = __webpack_require__(528);
+	var _newslettersListingsTabsJsx = __webpack_require__(529);
 
 	var _newslettersListingsTabsJsx2 = _interopRequireDefault(_newslettersListingsTabsJsx);
 
-	var _newslettersListingsMixinsJsx = __webpack_require__(529);
+	var _newslettersListingsMixinsJsx = __webpack_require__(530);
 
-	var mailpoet_tracking_enabled = !!window['mailpoet_tracking_enabled'];
+	var mailpoet_tracking_enabled = !!window.mailpoet_tracking_enabled;
 
 	var columns = [{
 	  name: 'subject',
@@ -12830,7 +13177,7 @@ webpackJsonp([0],{
 	        ' ',
 	        _react2['default'].createElement(
 	          _reactRouter.Link,
-	          { className: 'page-title-action', to: '/new' },
+	          { className: 'page-title-action', to: '/new', 'data-automation-id': 'new_email' },
 	          _mailpoet2['default'].I18n.t('new')
 	        )
 	      ),
@@ -12866,7 +13213,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 536:
+/***/ 537:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12885,11 +13232,11 @@ webpackJsonp([0],{
 
 	var _history = __webpack_require__(244);
 
-	var _segmentsListJsx = __webpack_require__(537);
+	var _segmentsListJsx = __webpack_require__(538);
 
 	var _segmentsListJsx2 = _interopRequireDefault(_segmentsListJsx);
 
-	var _segmentsFormJsx = __webpack_require__(538);
+	var _segmentsFormJsx = __webpack_require__(539);
 
 	var _segmentsFormJsx2 = _interopRequireDefault(_segmentsFormJsx);
 
@@ -12922,7 +13269,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 537:
+/***/ 538:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13242,24 +13589,23 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 538:
+/***/ 539:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
 
 	if (!global["MailPoetLib"]) global["MailPoetLib"] = {};
-	module.exports = global["MailPoetLib"]["Form"] = __webpack_require__(539);
+	module.exports = global["MailPoetLib"]["Form"] = __webpack_require__(540);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
 
-/***/ 539:
+/***/ 540:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(181), __webpack_require__(276), __webpack_require__(292)], __WEBPACK_AMD_DEFINE_RESULT__ = function (React, Router, MailPoet, Form) {
-
 	  var fields = [{
 	    name: 'name',
 	    label: MailPoet.I18n.t('name'),
@@ -13317,7 +13663,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 540:
+/***/ 541:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13336,7 +13682,7 @@ webpackJsonp([0],{
 
 	var _history = __webpack_require__(244);
 
-	var _listJsx = __webpack_require__(541);
+	var _listJsx = __webpack_require__(542);
 
 	var _listJsx2 = _interopRequireDefault(_listJsx);
 
@@ -13367,7 +13713,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 541:
+/***/ 542:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13599,11 +13945,11 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 542:
+/***/ 543:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	    __webpack_require__(543),
+	    __webpack_require__(544),
 	    __webpack_require__(275),
 	    __webpack_require__(276)
 	  ], __WEBPACK_AMD_DEFINE_RESULT__ = function (
@@ -13692,15 +14038,15 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 543:
+/***/ 544:
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["Backbone"] = __webpack_require__(544);
+	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["Backbone"] = __webpack_require__(545);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
 
-/***/ 544:
+/***/ 545:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {//     Backbone.js 1.3.3
@@ -15628,7 +15974,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 545:
+/***/ 546:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15647,11 +15993,11 @@ webpackJsonp([0],{
 
 	var _history = __webpack_require__(244);
 
-	var _helpKnowledge_baseJsx = __webpack_require__(546);
+	var _helpKnowledge_baseJsx = __webpack_require__(547);
 
 	var _helpKnowledge_baseJsx2 = _interopRequireDefault(_helpKnowledge_baseJsx);
 
-	var _helpSystem_infoJsx = __webpack_require__(548);
+	var _helpSystem_infoJsx = __webpack_require__(549);
 
 	var _helpSystem_infoJsx2 = _interopRequireDefault(_helpSystem_infoJsx);
 
@@ -15668,7 +16014,6 @@ webpackJsonp([0],{
 	var container = document.getElementById('help_container');
 
 	if (container) {
-
 	  _reactDom2['default'].render(_react2['default'].createElement(
 	    _reactRouter.Router,
 	    { history: history },
@@ -15685,7 +16030,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 546:
+/***/ 547:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15700,12 +16045,11 @@ webpackJsonp([0],{
 
 	var _mailpoet2 = _interopRequireDefault(_mailpoet);
 
-	var _tabsJsx = __webpack_require__(547);
+	var _tabsJsx = __webpack_require__(548);
 
 	var _tabsJsx2 = _interopRequireDefault(_tabsJsx);
 
 	function KnowledgeBase() {
-
 	  return _react2['default'].createElement(
 	    'div',
 	    null,
@@ -15803,7 +16147,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 547:
+/***/ 548:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15835,7 +16179,6 @@ webpackJsonp([0],{
 	}];
 
 	function Tabs(props) {
-
 	  var tabLinks = tabs.map(function (tab, index) {
 	    var tabClasses = (0, _classnames2['default'])('nav-tab', { 'nav-tab-active': props.tab === tab.name });
 
@@ -15864,7 +16207,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 548:
+/***/ 549:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15883,7 +16226,7 @@ webpackJsonp([0],{
 
 	var _underscore2 = _interopRequireDefault(_underscore);
 
-	var _tabsJsx = __webpack_require__(547);
+	var _tabsJsx = __webpack_require__(548);
 
 	var _tabsJsx2 = _interopRequireDefault(_tabsJsx);
 
@@ -15937,7 +16280,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 549:
+/***/ 550:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
@@ -15985,17 +16328,17 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 550:
+/***/ 551:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	    __webpack_require__(543),
+	    __webpack_require__(544),
 	    __webpack_require__(280),
 	    __webpack_require__(275),
 	    __webpack_require__(276),
-	    __webpack_require__(551),
 	    __webpack_require__(552),
 	    __webpack_require__(553),
+	    __webpack_require__(554),
 	    __webpack_require__(301)
 	  ], __WEBPACK_AMD_DEFINE_RESULT__ = function (
 	      Backbone,
@@ -17160,7 +17503,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 552:
+/***/ 553:
 /***/ function(module, exports) {
 
 	/*!
@@ -17172,7 +17515,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 553:
+/***/ 554:
 /***/ function(module, exports) {
 
 	/*
@@ -17258,14 +17601,14 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 554:
+/***/ 555:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
 	    __webpack_require__(280),
 	    __webpack_require__(275),
 	    __webpack_require__(276),
-	    __webpack_require__(551)
+	    __webpack_require__(552)
 	  ], __WEBPACK_AMD_DEFINE_RESULT__ = function (
 	   _,
 	   jQuery,

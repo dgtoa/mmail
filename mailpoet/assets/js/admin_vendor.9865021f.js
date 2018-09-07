@@ -8,9 +8,9 @@ webpackJsonp([1],[
 	__webpack_require__(422);
 	__webpack_require__(278);
 	__webpack_require__(292);
-	__webpack_require__(530);
+	__webpack_require__(531);
 	__webpack_require__(432);
-	__webpack_require__(523);
+	__webpack_require__(524);
 	module.exports = __webpack_require__(244);
 
 
@@ -31268,7 +31268,7 @@ webpackJsonp([1],[
 	        id: id
 	      }
 	    }).done(function (response) {
-	      if (_this8.props.messages !== undefined && _this8.props.messages['onRestore'] !== undefined) {
+	      if (_this8.props.messages !== undefined && _this8.props.messages.onRestore !== undefined) {
 	        _this8.props.messages.onRestore(response);
 	      }
 	      _this8.getItems();
@@ -31294,7 +31294,7 @@ webpackJsonp([1],[
 	        id: id
 	      }
 	    }).done(function (response) {
-	      if (_this9.props.messages !== undefined && _this9.props.messages['onTrash'] !== undefined) {
+	      if (_this9.props.messages !== undefined && _this9.props.messages.onTrash !== undefined) {
 	        _this9.props.messages.onTrash(response);
 	      }
 	      _this9.getItems();
@@ -31320,7 +31320,7 @@ webpackJsonp([1],[
 	        id: id
 	      }
 	    }).done(function (response) {
-	      if (_this10.props.messages !== undefined && _this10.props.messages['onDelete'] !== undefined) {
+	      if (_this10.props.messages !== undefined && _this10.props.messages.onDelete !== undefined) {
 	        _this10.props.messages.onDelete(response);
 	      }
 	      _this10.getItems();
@@ -33238,7 +33238,7 @@ webpackJsonp([1],[
 	        var action = _this.getSelectedAction();
 
 	        // action on select callback
-	        if (action !== null && action['onSelect'] !== undefined) {
+	        if (action !== null && action.onSelect !== undefined) {
 	          _this.setState({
 	            extra: action.onSelect(e)
 	          });
@@ -33256,12 +33256,12 @@ webpackJsonp([1],[
 
 	      var selected_ids = this.props.selection !== 'all' ? this.props.selected_ids : [];
 
-	      var data = action['getData'] !== undefined ? action.getData() : {};
+	      var data = action.getData !== undefined ? action.getData() : {};
 
 	      data.action = this.state.action;
 
 	      var onSuccess = function onSuccess() {};
-	      if (action['onSuccess'] !== undefined) {
+	      if (action.onSuccess !== undefined) {
 	        onSuccess = action.onSuccess;
 	      }
 
@@ -33280,8 +33280,8 @@ webpackJsonp([1],[
 	    getSelectedAction: function getSelectedAction() {
 	      var selected_action = this.refs.action.value;
 	      if (selected_action.length > 0) {
-	        var action = this.props.bulk_actions.filter(function (action) {
-	          return action.name === selected_action;
+	        var action = this.props.bulk_actions.filter(function (act) {
+	          return act.name === selected_action;
 	        });
 
 	        if (action.length > 0) {
@@ -33460,7 +33460,6 @@ webpackJsonp([1],[
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(277), __webpack_require__(276)], __WEBPACK_AMD_DEFINE_RESULT__ = function (React, classNames, MailPoet) {
-
 	  var ListingPages = React.createClass({
 	    displayName: 'ListingPages',
 
@@ -33692,7 +33691,6 @@ webpackJsonp([1],[
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(276), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function (MailPoet, React) {
-
 	  var ListingSearch = React.createClass({
 	    displayName: 'ListingSearch',
 
@@ -33743,7 +33741,6 @@ webpackJsonp([1],[
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(277)], __WEBPACK_AMD_DEFINE_RESULT__ = function (React, classNames) {
-
 	  var ListingGroups = React.createClass({
 	    displayName: 'ListingGroups',
 
@@ -33972,8 +33969,8 @@ webpackJsonp([1],[
 	      this.setState({ select2: true });
 	    },
 	    getSelectedValues: function getSelectedValues() {
-	      if (this.props.field['selected'] !== undefined) {
-	        return this.props.field['selected'](this.props.item);
+	      if (this.props.field.selected !== undefined) {
+	        return this.props.field.selected(this.props.item);
 	      } else if (this.props.item !== undefined && this.props.field.name !== undefined) {
 	        if (this.allowMultipleValues()) {
 	          if (Array.isArray(this.props.item[this.props.field.name])) {
@@ -33991,7 +33988,7 @@ webpackJsonp([1],[
 	      if (typeof window['mailpoet_' + this.props.field.endpoint] !== 'undefined') {
 	        var items = window['mailpoet_' + this.props.field.endpoint];
 
-	        if (this.props.field['filter'] !== undefined) {
+	        if (this.props.field.filter !== undefined) {
 	          items = items.filter(this.props.field.filter);
 	        }
 
@@ -34018,19 +34015,19 @@ webpackJsonp([1],[
 	      }
 	    },
 	    getLabel: function getLabel(item) {
-	      if (this.props.field['getLabel'] !== undefined) {
+	      if (this.props.field.getLabel !== undefined) {
 	        return this.props.field.getLabel(item, this.props.item);
 	      }
 	      return item.name;
 	    },
 	    getSearchLabel: function getSearchLabel(item) {
-	      if (this.props.field['getSearchLabel'] !== undefined) {
+	      if (this.props.field.getSearchLabel !== undefined) {
 	        return this.props.field.getSearchLabel(item, this.props.item);
 	      }
 	      return null;
 	    },
 	    getValue: function getValue(item) {
-	      if (this.props.field['getValue'] !== undefined) {
+	      if (this.props.field.getValue !== undefined) {
 	        return this.props.field.getValue(item, this.props.item);
 	      }
 	      return item.id;
@@ -34039,7 +34036,7 @@ webpackJsonp([1],[
 	    // this function may be used to transform the placeholder value into
 	    // desired value.
 	    transformChangedValue: function transformChangedValue(value) {
-	      if (typeof this.props.field['transformChangedValue'] === 'function') {
+	      if (typeof this.props.field.transformChangedValue === 'function') {
 	        return this.props.field.transformChangedValue.call(this, value);
 	      }
 	      return value;
@@ -39852,7 +39849,6 @@ webpackJsonp([1],[
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(276), __webpack_require__(277), __webpack_require__(181), __webpack_require__(294), __webpack_require__(275)], __WEBPACK_AMD_DEFINE_RESULT__ = function (React, MailPoet, classNames, Router, FormField, jQuery) {
-
 	  var Form = React.createClass({
 	    displayName: 'Form',
 
@@ -39944,7 +39940,7 @@ webpackJsonp([1],[
 	      // only get values from displayed fields
 	      var item = {};
 	      this.props.fields.map(function (field) {
-	        if (field['fields'] !== undefined) {
+	        if (field.fields !== undefined) {
 	          field.fields.map(function (subfield) {
 	            item[subfield.name] = _this2.state.item[subfield.name];
 	          });
@@ -40108,7 +40104,7 @@ webpackJsonp([1],[
 	      var field = false;
 	      var dataField = data.field;
 
-	      if (data.field['field'] !== undefined) {
+	      if (data.field.field !== undefined) {
 	        dataField = jQuery.merge(dataField, data.field.field);
 	      }
 
@@ -40166,7 +40162,7 @@ webpackJsonp([1],[
 
 	      var field = false;
 
-	      if (this.props.field['fields'] !== undefined) {
+	      if (this.props.field.fields !== undefined) {
 	        field = this.props.field.fields.map(function (subfield, index) {
 	          return _this.renderField({
 	            index: index,
@@ -40240,7 +40236,7 @@ webpackJsonp([1],[
 
 	    return _react2['default'].createElement('input', _extends({
 	      type: 'text',
-	      disabled: this.props.field['disabled'] !== undefined ? this.props.field.disabled(this.props.item) : false,
+	      disabled: this.props.field.disabled !== undefined ? this.props.field.disabled(this.props.item) : false,
 	      className: this.props.field.size ? '' : 'regular-text',
 	      size: this.props.field.size !== 'auto' && this.props.field.size > 0 ? this.props.field.size : false,
 	      name: this.props.field.name,
@@ -40323,7 +40319,7 @@ webpackJsonp([1],[
 	      );
 	    }
 
-	    if (this.props.field['filter'] !== undefined) {
+	    if (this.props.field.filter !== undefined) {
 	      filter = this.props.field.filter;
 	    }
 
@@ -40345,7 +40341,6 @@ webpackJsonp([1],[
 	    }
 
 	    var options = keys.map(function (value, index) {
-
 	      if (filter !== false && filter(_this.props.item, value) === false) {
 	        return;
 	      }
@@ -40809,7 +40804,7 @@ webpackJsonp([1],[
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;/* WEBPACK VAR INJECTION */(function(module) {//! moment.js
-	//! version : 2.19.1
+	//! version : 2.19.2
 	//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 	//! license : MIT
 	//! momentjs.com
@@ -41624,7 +41619,7 @@ webpackJsonp([1],[
 
 	function set$1 (mom, unit, value) {
 	    if (mom.isValid() && !isNaN(value)) {
-	        if (unit === 'FullYear' && isLeapYear(mom.year())) {
+	        if (unit === 'FullYear' && isLeapYear(mom.year()) && mom.month() === 1 && mom.date() === 29) {
 	            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value, mom.month(), daysInMonth(value, mom.month()));
 	        }
 	        else {
@@ -42730,10 +42725,11 @@ webpackJsonp([1],[
 
 	function updateLocale(name, config) {
 	    if (config != null) {
-	        var locale, parentConfig = baseConfig;
+	        var locale, tmpLocale, parentConfig = baseConfig;
 	        // MERGE
-	        if (locales[name] != null) {
-	            parentConfig = locales[name]._config;
+	        tmpLocale = loadLocale(name);
+	        if (tmpLocale != null) {
+	            parentConfig = tmpLocale._config;
 	        }
 	        config = mergeConfigs(parentConfig, config);
 	        locale = new Locale(config);
@@ -45287,7 +45283,7 @@ webpackJsonp([1],[
 	// Side effect imports
 
 
-	hooks.version = '2.19.1';
+	hooks.version = '2.19.2';
 
 	setHookCallback(createLocal);
 
@@ -57892,7 +57888,7 @@ webpackJsonp([1],[
 
 	        var label = step.label;
 
-	        if (step['link'] !== undefined && _this.props.step !== step.name) {
+	        if (step.link !== undefined && _this.props.step !== step.name) {
 	          label = React.createElement(
 	            Link,
 	            { to: step.link },
@@ -57926,7 +57922,8 @@ webpackJsonp([1],[
 /***/ },
 /* 434 */,
 /* 435 */,
-/* 436 */
+/* 436 */,
+/* 437 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57962,45 +57959,45 @@ webpackJsonp([1],[
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _staticMethods = __webpack_require__(437);
+	var _staticMethods = __webpack_require__(438);
 
 	var _staticMethods2 = _interopRequireDefault(_staticMethods);
 
-	var _windowListener = __webpack_require__(439);
+	var _windowListener = __webpack_require__(440);
 
 	var _windowListener2 = _interopRequireDefault(_windowListener);
 
-	var _customEvent = __webpack_require__(440);
+	var _customEvent = __webpack_require__(441);
 
 	var _customEvent2 = _interopRequireDefault(_customEvent);
 
-	var _isCapture = __webpack_require__(441);
+	var _isCapture = __webpack_require__(442);
 
 	var _isCapture2 = _interopRequireDefault(_isCapture);
 
-	var _getEffect = __webpack_require__(442);
+	var _getEffect = __webpack_require__(443);
 
 	var _getEffect2 = _interopRequireDefault(_getEffect);
 
-	var _trackRemoval = __webpack_require__(443);
+	var _trackRemoval = __webpack_require__(444);
 
 	var _trackRemoval2 = _interopRequireDefault(_trackRemoval);
 
-	var _getPosition = __webpack_require__(444);
+	var _getPosition = __webpack_require__(445);
 
 	var _getPosition2 = _interopRequireDefault(_getPosition);
 
-	var _getTipContent = __webpack_require__(445);
+	var _getTipContent = __webpack_require__(446);
 
 	var _getTipContent2 = _interopRequireDefault(_getTipContent);
 
-	var _aria = __webpack_require__(446);
+	var _aria = __webpack_require__(447);
 
-	var _nodeListToArray = __webpack_require__(447);
+	var _nodeListToArray = __webpack_require__(448);
 
 	var _nodeListToArray2 = _interopRequireDefault(_nodeListToArray);
 
-	var _style = __webpack_require__(448);
+	var _style = __webpack_require__(449);
 
 	var _style2 = _interopRequireDefault(_style);
 
@@ -58525,7 +58522,7 @@ webpackJsonp([1],[
 	module.exports = ReactTooltip;
 
 /***/ },
-/* 437 */
+/* 438 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58583,7 +58580,7 @@ webpackJsonp([1],[
 	  };
 	};
 
-	var _constant = __webpack_require__(438);
+	var _constant = __webpack_require__(439);
 
 	var _constant2 = _interopRequireDefault(_constant);
 
@@ -58608,7 +58605,7 @@ webpackJsonp([1],[
 	    */
 
 /***/ },
-/* 438 */
+/* 439 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -58626,7 +58623,7 @@ webpackJsonp([1],[
 	};
 
 /***/ },
-/* 439 */
+/* 440 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58672,14 +58669,14 @@ webpackJsonp([1],[
 	  };
 	};
 
-	var _constant = __webpack_require__(438);
+	var _constant = __webpack_require__(439);
 
 	var _constant2 = _interopRequireDefault(_constant);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ },
-/* 440 */
+/* 441 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -58772,7 +58769,7 @@ webpackJsonp([1],[
 	var customListener = void 0;
 
 /***/ },
-/* 441 */
+/* 442 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -58789,7 +58786,7 @@ webpackJsonp([1],[
 	};
 
 /***/ },
-/* 442 */
+/* 443 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -58806,7 +58803,7 @@ webpackJsonp([1],[
 	};
 
 /***/ },
-/* 443 */
+/* 444 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -58902,7 +58899,7 @@ webpackJsonp([1],[
 	};
 
 /***/ },
-/* 444 */
+/* 445 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -59216,7 +59213,7 @@ webpackJsonp([1],[
 	};
 
 /***/ },
-/* 445 */
+/* 446 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59253,7 +59250,7 @@ webpackJsonp([1],[
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ },
-/* 446 */
+/* 447 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -59282,7 +59279,7 @@ webpackJsonp([1],[
 	}
 
 /***/ },
-/* 447 */
+/* 448 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -59302,7 +59299,7 @@ webpackJsonp([1],[
 	};
 
 /***/ },
-/* 448 */
+/* 449 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -59313,7 +59310,6 @@ webpackJsonp([1],[
 	exports.default = '.__react_component_tooltip{border-radius:3px;display:inline-block;font-size:13px;left:-999em;opacity:0;padding:8px 21px;position:fixed;pointer-events:none;transition:opacity 0.3s ease-out;top:-999em;visibility:hidden;z-index:999}.__react_component_tooltip:before,.__react_component_tooltip:after{content:"";width:0;height:0;position:absolute}.__react_component_tooltip.show{opacity:0.9;margin-top:0px;margin-left:0px;visibility:visible}.__react_component_tooltip.type-dark{color:#fff;background-color:#222}.__react_component_tooltip.type-dark.place-top:after{border-top-color:#222;border-top-style:solid;border-top-width:6px}.__react_component_tooltip.type-dark.place-bottom:after{border-bottom-color:#222;border-bottom-style:solid;border-bottom-width:6px}.__react_component_tooltip.type-dark.place-left:after{border-left-color:#222;border-left-style:solid;border-left-width:6px}.__react_component_tooltip.type-dark.place-right:after{border-right-color:#222;border-right-style:solid;border-right-width:6px}.__react_component_tooltip.type-dark.border{border:1px solid #fff}.__react_component_tooltip.type-dark.border.place-top:before{border-top:8px solid #fff}.__react_component_tooltip.type-dark.border.place-bottom:before{border-bottom:8px solid #fff}.__react_component_tooltip.type-dark.border.place-left:before{border-left:8px solid #fff}.__react_component_tooltip.type-dark.border.place-right:before{border-right:8px solid #fff}.__react_component_tooltip.type-success{color:#fff;background-color:#8DC572}.__react_component_tooltip.type-success.place-top:after{border-top-color:#8DC572;border-top-style:solid;border-top-width:6px}.__react_component_tooltip.type-success.place-bottom:after{border-bottom-color:#8DC572;border-bottom-style:solid;border-bottom-width:6px}.__react_component_tooltip.type-success.place-left:after{border-left-color:#8DC572;border-left-style:solid;border-left-width:6px}.__react_component_tooltip.type-success.place-right:after{border-right-color:#8DC572;border-right-style:solid;border-right-width:6px}.__react_component_tooltip.type-success.border{border:1px solid #fff}.__react_component_tooltip.type-success.border.place-top:before{border-top:8px solid #fff}.__react_component_tooltip.type-success.border.place-bottom:before{border-bottom:8px solid #fff}.__react_component_tooltip.type-success.border.place-left:before{border-left:8px solid #fff}.__react_component_tooltip.type-success.border.place-right:before{border-right:8px solid #fff}.__react_component_tooltip.type-warning{color:#fff;background-color:#F0AD4E}.__react_component_tooltip.type-warning.place-top:after{border-top-color:#F0AD4E;border-top-style:solid;border-top-width:6px}.__react_component_tooltip.type-warning.place-bottom:after{border-bottom-color:#F0AD4E;border-bottom-style:solid;border-bottom-width:6px}.__react_component_tooltip.type-warning.place-left:after{border-left-color:#F0AD4E;border-left-style:solid;border-left-width:6px}.__react_component_tooltip.type-warning.place-right:after{border-right-color:#F0AD4E;border-right-style:solid;border-right-width:6px}.__react_component_tooltip.type-warning.border{border:1px solid #fff}.__react_component_tooltip.type-warning.border.place-top:before{border-top:8px solid #fff}.__react_component_tooltip.type-warning.border.place-bottom:before{border-bottom:8px solid #fff}.__react_component_tooltip.type-warning.border.place-left:before{border-left:8px solid #fff}.__react_component_tooltip.type-warning.border.place-right:before{border-right:8px solid #fff}.__react_component_tooltip.type-error{color:#fff;background-color:#BE6464}.__react_component_tooltip.type-error.place-top:after{border-top-color:#BE6464;border-top-style:solid;border-top-width:6px}.__react_component_tooltip.type-error.place-bottom:after{border-bottom-color:#BE6464;border-bottom-style:solid;border-bottom-width:6px}.__react_component_tooltip.type-error.place-left:after{border-left-color:#BE6464;border-left-style:solid;border-left-width:6px}.__react_component_tooltip.type-error.place-right:after{border-right-color:#BE6464;border-right-style:solid;border-right-width:6px}.__react_component_tooltip.type-error.border{border:1px solid #fff}.__react_component_tooltip.type-error.border.place-top:before{border-top:8px solid #fff}.__react_component_tooltip.type-error.border.place-bottom:before{border-bottom:8px solid #fff}.__react_component_tooltip.type-error.border.place-left:before{border-left:8px solid #fff}.__react_component_tooltip.type-error.border.place-right:before{border-right:8px solid #fff}.__react_component_tooltip.type-info{color:#fff;background-color:#337AB7}.__react_component_tooltip.type-info.place-top:after{border-top-color:#337AB7;border-top-style:solid;border-top-width:6px}.__react_component_tooltip.type-info.place-bottom:after{border-bottom-color:#337AB7;border-bottom-style:solid;border-bottom-width:6px}.__react_component_tooltip.type-info.place-left:after{border-left-color:#337AB7;border-left-style:solid;border-left-width:6px}.__react_component_tooltip.type-info.place-right:after{border-right-color:#337AB7;border-right-style:solid;border-right-width:6px}.__react_component_tooltip.type-info.border{border:1px solid #fff}.__react_component_tooltip.type-info.border.place-top:before{border-top:8px solid #fff}.__react_component_tooltip.type-info.border.place-bottom:before{border-bottom:8px solid #fff}.__react_component_tooltip.type-info.border.place-left:before{border-left:8px solid #fff}.__react_component_tooltip.type-info.border.place-right:before{border-right:8px solid #fff}.__react_component_tooltip.type-light{color:#222;background-color:#fff}.__react_component_tooltip.type-light.place-top:after{border-top-color:#fff;border-top-style:solid;border-top-width:6px}.__react_component_tooltip.type-light.place-bottom:after{border-bottom-color:#fff;border-bottom-style:solid;border-bottom-width:6px}.__react_component_tooltip.type-light.place-left:after{border-left-color:#fff;border-left-style:solid;border-left-width:6px}.__react_component_tooltip.type-light.place-right:after{border-right-color:#fff;border-right-style:solid;border-right-width:6px}.__react_component_tooltip.type-light.border{border:1px solid #222}.__react_component_tooltip.type-light.border.place-top:before{border-top:8px solid #222}.__react_component_tooltip.type-light.border.place-bottom:before{border-bottom:8px solid #222}.__react_component_tooltip.type-light.border.place-left:before{border-left:8px solid #222}.__react_component_tooltip.type-light.border.place-right:before{border-right:8px solid #222}.__react_component_tooltip.place-top{margin-top:-10px}.__react_component_tooltip.place-top:before{border-left:10px solid transparent;border-right:10px solid transparent;bottom:-8px;left:50%;margin-left:-10px}.__react_component_tooltip.place-top:after{border-left:8px solid transparent;border-right:8px solid transparent;bottom:-6px;left:50%;margin-left:-8px}.__react_component_tooltip.place-bottom{margin-top:10px}.__react_component_tooltip.place-bottom:before{border-left:10px solid transparent;border-right:10px solid transparent;top:-8px;left:50%;margin-left:-10px}.__react_component_tooltip.place-bottom:after{border-left:8px solid transparent;border-right:8px solid transparent;top:-6px;left:50%;margin-left:-8px}.__react_component_tooltip.place-left{margin-left:-10px}.__react_component_tooltip.place-left:before{border-top:6px solid transparent;border-bottom:6px solid transparent;right:-8px;top:50%;margin-top:-5px}.__react_component_tooltip.place-left:after{border-top:5px solid transparent;border-bottom:5px solid transparent;right:-6px;top:50%;margin-top:-4px}.__react_component_tooltip.place-right{margin-left:10px}.__react_component_tooltip.place-right:before{border-top:6px solid transparent;border-bottom:6px solid transparent;left:-8px;top:50%;margin-top:-5px}.__react_component_tooltip.place-right:after{border-top:5px solid transparent;border-bottom:5px solid transparent;left:-6px;top:50%;margin-top:-4px}.__react_component_tooltip .multi-line{display:block;padding:2px 0px;text-align:center}';
 
 /***/ },
-/* 449 */,
 /* 450 */,
 /* 451 */,
 /* 452 */,
@@ -59384,7 +59380,8 @@ webpackJsonp([1],[
 /* 517 */,
 /* 518 */,
 /* 519 */,
-/* 520 */
+/* 520 */,
+/* 521 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59406,14 +59403,14 @@ webpackJsonp([1],[
 	var timeFormat = window.mailpoet_time_format || 'H:i';
 
 	// welcome emails
-	var _timeDelayValues = {
+	var timeDelayValues = {
 	  immediate: _mailpoet2['default'].I18n.t('delayImmediately'),
 	  hours: _mailpoet2['default'].I18n.t('delayHoursAfter'),
 	  days: _mailpoet2['default'].I18n.t('delayDaysAfter'),
 	  weeks: _mailpoet2['default'].I18n.t('delayWeeksAfter')
 	};
 
-	var _intervalValues = {
+	var intervalValues = {
 	  daily: _mailpoet2['default'].I18n.t('daily'),
 	  weekly: _mailpoet2['default'].I18n.t('weekly'),
 	  monthly: _mailpoet2['default'].I18n.t('monthly'),
@@ -59426,7 +59423,7 @@ webpackJsonp([1],[
 	var TIME_STEP_SECONDS = 3600;
 	var numberOfTimeSteps = SECONDS_IN_DAY / TIME_STEP_SECONDS;
 
-	var _timeOfDayValues = _underscore2['default'].object(_underscore2['default'].map(_underscore2['default'].times(numberOfTimeSteps, function (step) {
+	var timeOfDayValues = _underscore2['default'].object(_underscore2['default'].map(_underscore2['default'].times(numberOfTimeSteps, function (step) {
 	  return step * TIME_STEP_SECONDS;
 	}), function (seconds) {
 	  var date = new Date(null);
@@ -59435,7 +59432,7 @@ webpackJsonp([1],[
 	  return [seconds, timeLabel];
 	}));
 
-	var _weekDayValues = {
+	var weekDayValues = {
 	  0: _mailpoet2['default'].I18n.t('sunday'),
 	  1: _mailpoet2['default'].I18n.t('monday'),
 	  2: _mailpoet2['default'].I18n.t('tuesday'),
@@ -59446,7 +59443,7 @@ webpackJsonp([1],[
 	};
 
 	var NUMBER_OF_DAYS_IN_MONTH = 28;
-	var _monthDayValues = _underscore2['default'].object(_underscore2['default'].map(_underscore2['default'].times(NUMBER_OF_DAYS_IN_MONTH, function (day) {
+	var monthDayValues = _underscore2['default'].object(_underscore2['default'].map(_underscore2['default'].times(NUMBER_OF_DAYS_IN_MONTH, function (day) {
 	  return day;
 	}), function (day) {
 	  var labels = {
@@ -59463,34 +59460,34 @@ webpackJsonp([1],[
 	  return [day + 1, label];
 	}));
 
-	var _nthWeekDayValues = {
+	var nthWeekDayValues = {
 	  1: _mailpoet2['default'].I18n.t('first'),
 	  2: _mailpoet2['default'].I18n.t('second'),
 	  3: _mailpoet2['default'].I18n.t('third'),
 	  L: _mailpoet2['default'].I18n.t('last')
 	};
 
-	exports.timeDelayValues = _timeDelayValues;
-	exports.intervalValues = _intervalValues;
-	exports.timeOfDayValues = _timeOfDayValues;
-	exports.weekDayValues = _weekDayValues;
-	exports.monthDayValues = _monthDayValues;
-	exports.nthWeekDayValues = _nthWeekDayValues;
+	exports.timeDelayValues = timeDelayValues;
+	exports.intervalValues = intervalValues;
+	exports.timeOfDayValues = timeOfDayValues;
+	exports.weekDayValues = weekDayValues;
+	exports.monthDayValues = monthDayValues;
+	exports.nthWeekDayValues = nthWeekDayValues;
 
 /***/ },
-/* 521 */,
 /* 522 */,
-/* 523 */
+/* 523 */,
+/* 524 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
 
 	if (!global["MailPoetLib"]) global["MailPoetLib"] = {};
-	module.exports = global["MailPoetLib"]["NewsletterWelcomeNotificationScheduling"] = __webpack_require__(524);
+	module.exports = global["MailPoetLib"]["NewsletterWelcomeNotificationScheduling"] = __webpack_require__(525);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 524 */
+/* 525 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59517,7 +59514,7 @@ webpackJsonp([1],[
 
 	var _formFieldsTextJsx2 = _interopRequireDefault(_formFieldsTextJsx);
 
-	var _newslettersSchedulingCommonJsx = __webpack_require__(520);
+	var _newslettersSchedulingCommonJsx = __webpack_require__(521);
 
 	var availableRoles = window.mailpoet_roles || {};
 	var availableSegments = _underscore2['default'].filter(window.mailpoet_segments || [], function (segment) {
@@ -59565,11 +59562,11 @@ webpackJsonp([1],[
 	  contextTypes: {
 	    router: _react2['default'].PropTypes.object.isRequired
 	  },
-	  _getCurrentValue: function _getCurrentValue() {
+	  getCurrentValue: function getCurrentValue() {
 	    return this.props.item[this.props.field.name] || {};
 	  },
 	  handleValueChange: function handleValueChange(name, value) {
-	    var oldValue = this._getCurrentValue();
+	    var oldValue = this.getCurrentValue();
 	    var newValue = {};
 
 	    newValue[name] = value;
@@ -59621,25 +59618,25 @@ webpackJsonp([1],[
 	    this.context.router.push('/template/' + newsletterId);
 	  },
 	  render: function render() {
-	    var value = this._getCurrentValue();
+	    var value = this.getCurrentValue();
 	    var roleSegmentSelection = undefined;
 	    var timeNumber = undefined;
 
 	    if (value.event === 'user') {
 	      roleSegmentSelection = _react2['default'].createElement(_formFieldsSelectJsx2['default'], {
 	        field: roleField,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleRoleChange });
 	    } else {
 	      roleSegmentSelection = _react2['default'].createElement(_formFieldsSelectJsx2['default'], {
 	        field: segmentField,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleSegmentChange });
 	    }
 	    if (value.afterTimeType !== 'immediate') {
 	      timeNumber = _react2['default'].createElement(_formFieldsTextJsx2['default'], {
 	        field: afterTimeNumberField,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleAfterTimeNumberChange });
 	    }
 
@@ -59648,13 +59645,13 @@ webpackJsonp([1],[
 	      null,
 	      _react2['default'].createElement(_formFieldsSelectJsx2['default'], {
 	        field: events,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleEventChange }),
 	      roleSegmentSelection,
 	      timeNumber,
 	      _react2['default'].createElement(_formFieldsSelectJsx2['default'], {
 	        field: afterTimeTypeField,
-	        item: this._getCurrentValue(),
+	        item: this.getCurrentValue(),
 	        onValueChange: this.handleAfterTimeTypeChange })
 	    );
 	  }
@@ -59663,22 +59660,22 @@ webpackJsonp([1],[
 	module.exports = WelcomeScheduling;
 
 /***/ },
-/* 525 */,
 /* 526 */,
 /* 527 */,
 /* 528 */,
 /* 529 */,
-/* 530 */
+/* 530 */,
+/* 531 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
 
 	if (!global["MailPoetLib"]) global["MailPoetLib"] = {};
-	module.exports = global["MailPoetLib"]["StatsBadge"] = __webpack_require__(531);
+	module.exports = global["MailPoetLib"]["StatsBadge"] = __webpack_require__(532);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 531 */
+/* 532 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59705,7 +59702,7 @@ webpackJsonp([1],[
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _badgeJsx = __webpack_require__(532);
+	var _badgeJsx = __webpack_require__(533);
 
 	var _badgeJsx2 = _interopRequireDefault(_badgeJsx);
 
@@ -59817,7 +59814,7 @@ webpackJsonp([1],[
 	module.exports = exports['default'];
 
 /***/ },
-/* 532 */
+/* 533 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59844,7 +59841,7 @@ webpackJsonp([1],[
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _reactTooltip = __webpack_require__(436);
+	var _reactTooltip = __webpack_require__(437);
 
 	var _reactTooltip2 = _interopRequireDefault(_reactTooltip);
 

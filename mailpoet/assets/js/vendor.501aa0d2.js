@@ -76,7 +76,7 @@
 /******/ 			script.charset = 'utf-8';
 /******/ 			script.async = true;
 
-/******/ 			script.src = __webpack_require__.p + "" + ({"0":"admin","1":"admin_vendor","2":"form_editor","3":"mailpoet","4":"newsletter_editor"}[chunkId]||chunkId) + "." + {"0":"73f15e01","1":"fc9d02c2","2":"612beb34","3":"3dd11c86","4":"c4722da5"}[chunkId] + ".chunk.js";
+/******/ 			script.src = __webpack_require__.p + "" + ({"0":"admin","1":"admin_vendor","2":"form_editor","3":"mailpoet","4":"newsletter_editor"}[chunkId]||chunkId) + "." + {"0":"5976c78a","1":"9865021f","2":"612beb34","3":"0ecf7a2c","4":"c4722da5"}[chunkId] + ".chunk.js";
 /******/ 			head.appendChild(script);
 /******/ 		}
 /******/ 	};
@@ -99,17 +99,17 @@
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(551);
-	__webpack_require__(614);
+	__webpack_require__(552);
+	__webpack_require__(615);
 	module.exports = __webpack_require__(429);
 
 
 /***/ },
 
-/***/ 614:
+/***/ 615:
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(551)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Handlebars) {
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(552)], __WEBPACK_AMD_DEFINE_RESULT__ = function (Handlebars) {
 	  // Handlebars helpers
 	  Handlebars.registerHelper('concat', function () {
 	    var size = (arguments.length - 1);
@@ -542,7 +542,7 @@
 
 /***/ },
 
-/***/ 551:
+/***/ 552:
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!

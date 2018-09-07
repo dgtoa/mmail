@@ -34,6 +34,7 @@ class Pages {
     // [mailpoet_manage text="Manage your subscription"]
     add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
     add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
+    add_shortcode('mailpoet_manage_unsubscription', array($this, 'getUnsubscribeManageContent'));
   }
 
   private function isPreview() {
@@ -202,7 +203,7 @@ class Pages {
 
   private function getUnsubscribeTitle() {
     if($this->isPreview() || $this->subscriber !== false) {
-      return __("You are now unsubscribed.", 'mailpoet');
+      return __("뉴스레터 구독 해지", 'mailpoet');
     }
   }
 
@@ -395,6 +396,237 @@ class Pages {
     // subscription form
     $form_html .= FormRenderer::renderBlocks($form, $honeypot = false);
     $form_html .= '</form>';
+    return $form_html;
+  }
+
+
+public function getUnsubscribeManageContent() {
+    
+    if($this->isPreview()) {
+      $subscriber = Subscriber::create();
+      $subscriber->hydrate(array(
+        'email' => '',
+        'first_name' => '',
+        'last_name' => ''
+      ));
+    } else if($this->subscriber !== false) {
+        if($this->subscriber->status == "unsubscribed"){
+          ?>
+          <script>location.replace("http://horizon.kias.re.kr/newsletter-unsubscribe-success");</script>
+          
+          <?php
+          return;  
+        }else{
+          $subscriber = $this->subscriber
+          ->withCustomFields()
+          ->withSubscriptions();
+        }
+    } else {
+      return;
+    }
+
+    $custom_fields = array_map(function($custom_field) use($subscriber) {
+      $custom_field->id = 'cf_'.$custom_field->id;
+      $custom_field = $custom_field->asArray();
+      $custom_field['params']['value'] = $subscriber->{$custom_field['id']};
+
+      if($custom_field['type'] === 'date') {
+        $date_formats = FormBlockDate::getDateFormats();
+        $custom_field['params']['date_format'] = array_shift(
+          $date_formats[$custom_field['params']['date_type']]
+        );
+      }
+
+      return $custom_field;
+    }, CustomField::findMany());
+
+    $segment_ids = Setting::getValue('subscription.segments', array());
+    if(!empty($segment_ids)) {
+      $segments = Segment::getPublic()
+        ->whereIn('id', $segment_ids)
+        ->findMany();
+    } else {
+      $segments = Segment::getPublic()
+        ->findMany();
+    }
+    $subscribed_segment_ids = array();
+    if(!empty($this->subscriber->subscriptions)) {
+      foreach($this->subscriber->subscriptions as $subscription) {
+        if($subscription['status'] === Subscriber::STATUS_SUBSCRIBED) {
+          $subscribed_segment_ids[] = $subscription['segment_id'];
+        }
+      }
+    }
+
+    $segments = array_map(function($segment) use($subscribed_segment_ids) {
+      return array(
+        'id' => $segment->id,
+        'name' => $segment->name,
+        'is_checked' => in_array($segment->id, $subscribed_segment_ids)
+      );
+    }, $segments);
+
+
+    $fields = array(
+      array(
+        'id' => 'first_name',
+        'type' => 'text',
+        'params' => array(
+          'label' => __('First name', 'mailpoet'),
+          'value' => $subscriber->first_name,
+          'disabled' => ($subscriber->isWPUser())
+        )
+      ),
+      array(
+        'id' => 'last_name',
+        'type' => 'text',
+        'params' => array(
+          'label' => __('Last name', 'mailpoet'),
+          'value' => $subscriber->last_name,
+          'disabled' => ($subscriber->isWPUser())
+        )
+      ),
+      array(
+        'id' => 'status',
+        'type' => 'select',
+        'params' => array(
+          'required' => true,
+          'label' => __('Status', 'mailpoet'),
+          'values' => array(
+            array(
+              'value' => array(
+                Subscriber::STATUS_SUBSCRIBED => __('Subscribed', 'mailpoet')
+              ),
+              'is_checked' => (
+                $subscriber->status === Subscriber::STATUS_SUBSCRIBED
+              )
+            ),
+            array(
+              'value' => array(
+                Subscriber::STATUS_UNSUBSCRIBED => __('Unsubscribed', 'mailpoet')
+              ),
+              'is_checked' => (
+                $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
+              )
+            ),
+            array(
+              'value' => array(
+                Subscriber::STATUS_BOUNCED => __('Bounced', 'mailpoet')
+              ),
+              'is_checked' => (
+                $subscriber->status === Subscriber::STATUS_BOUNCED
+              ),
+              'is_disabled' => true,
+              'is_hidden' => (
+                $subscriber->status !== Subscriber::STATUS_BOUNCED
+              )
+            )
+          )
+        )
+      )
+    );
+
+    $form = array_merge(
+      $fields,
+      $custom_fields,
+      array(
+        array(
+          'id' => 'segments',
+          'type' => 'segment',
+          'params' => array(
+            'label' => __('Your lists', 'mailpoet'),
+            'values' => $segments
+          )
+        ),
+        array(
+          'id' => 'submit',
+          'type' => 'submit',
+          'params' => array(
+            'label' => __('Save', 'mailpoet')
+          )
+        )
+      )
+    );
+    $form_html = '
+    <style>
+        #subscribe-success {
+            margin-bottom : 110px; 
+        }
+        #subscribe-success .mailpoet_paragraph {
+            display:none;
+        }
+        
+        .unsubscribe-button {
+            width: 100px !important;
+            height: 40px !important;
+            padding: 10px 10px !important;
+            background:#999 !important;
+            border-radius:4px !important;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        span.unsubscribe-button {
+            display: inline-block;
+            padding: 10px 10px!important;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        @media screen and (max-width:40em) {
+            #subscribe-success {
+                width: 310px;
+                margin-bottom: 70px !important;
+            }
+        }
+    </style>';
+    $form_html .= '<form method="POST" id="subscribe-success"'.
+      'action="'.admin_url('admin-post.php').'" '.
+      'novalidate>';
+    $form_html .= '<div class="wraper-form">
+                            <div class="register-form-title">
+    <span class="page-title" style="margin-bottom:30px; font-size:25px;">뉴스레터 구독해지 신청</span>';
+    $form_html .= '<input type="hidden" name="action"'.
+      ' value="mailpoet_subscription_update" />';
+    $form_html .= '<input type="hidden" name="data[segments]" value="" />';
+    $form_html .= '<input type="hidden" name="mailpoet_redirect" '.
+      'value="'.UrlHelper::getCurrentUrl().'" />';
+    $form_html .= '<input type="hidden" name="data[email]" value="'.
+      $subscriber->email.
+    '" />';
+    $form_html .= '<input type="hidden" name="token" value="'.
+      Subscriber::generateToken($subscriber->email).
+    '" />';
+
+    $form_html .= '<p>';
+    $form_html .= '<label style="margin-top:28px; text-transform:none;"><strong>'.$subscriber->email.'</strong></label>';
+    $form_html .= '</p>';
+    
+    $form_html .= '<p style="font-size:15px;">뉴스레터 구독해지 신청이 완료되었습니다.</p>'; //'<p>다음 이메일 주소에 대해 구독을 해지하시겠습니까?</p>';
+    $form_html .= '<div class="half-btn-box" style="overflow:hidden; text-align:center; margin-top: 37px;">';
+        $redirect_url = home_url("newsletter-unsubscribe-success");
+    $form_html .= //'<input type="button" class="unsubscribe-button" id="unsubscribe-yes" value="예" style="color:#999; margin-right:10px;"> 
+                        '<a href='. home_url() .'><span id="unsubscribe-yes" class="unsubscribe-button" style="display:inline-block; color:#ffffff;">메인으로</a></span>
+                    </div>';
+    $form_html .= '<input type=hidden name="isUnscribed" id="hidden-isUnscribed" value="" >';
+    
+    // subscription form
+    $form_html .= FormRenderer::renderBlocks($form, $honeypot = false);
+    $form_html .= '</div>
+                        <div>';
+    $form_html .= '</form>';
+    
+    $form_html .= "
+    <script>
+        var form = document.querySelector('#subscribe-success');
+        var unsubscribe_yes_button = document.querySelector('#unsubscribe-yes');
+        
+        unsubscribe_yes_button.addEventListener('click', function() {
+            var isUns = document.querySelector('#hidden-isUnscribed');
+            isUns.value = 'true';
+            form.submit();
+        });
+        
+    </script>
+    ";
     return $form_html;
   }
 

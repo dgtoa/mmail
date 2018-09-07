@@ -32,6 +32,8 @@ class MetaInformationManager {
         else if($position === 'below') $content .= $text;
       }
     }
+    
+    $text = $text;
 
     return $content;
   }
@@ -40,11 +42,11 @@ class MetaInformationManager {
   private static function getPostCategories($post_id, $post_type, $preceded_by) {
     $preceded_by = trim($preceded_by);
 
-    // Get categories
+    // Get categories.. 이거 지금 안씀. PostTransformer.php로 함수 넘김.
     $categories = wp_get_post_terms(
       $post_id,
       array('category'),
-      array('fields' => 'names')
+      array('fields' => 'names', 'exclude' => '2, 3, 4, 91, 92')
     );
     if(!empty($categories)) {
       // check if the user specified a label to be displayed before the author's name

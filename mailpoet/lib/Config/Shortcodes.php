@@ -30,8 +30,20 @@ class Shortcodes {
     Hooks::addFilter('mailpoet_archive_date', array(
       $this, 'renderArchiveDate'
     ), 2);
+    Hooks::addFilter('mailpoet_archive_date_day', array(
+      $this, 'renderArchiveDateDay'
+    ), 2);
+    Hooks::addFilter('mailpoet_archive_date_month', array(
+      $this, 'renderArchiveDateMonth'
+    ), 2);
+    Hooks::addFilter('mailpoet_archive_date_year', array(
+      $this, 'renderArchiveDateYear'
+    ), 2);    
     Hooks::addFilter('mailpoet_archive_subject', array(
       $this, 'renderArchiveSubject'
+    ), 2, 3);
+    Hooks::addFilter('mailpoet_archive_preheader', array(
+      $this, 'renderArchivePreheader'
     ), 2, 3);
   }
 
@@ -66,8 +78,10 @@ class Shortcodes {
       );
     }
   }
+  
 
   function getArchive($params) {
+      
     $segment_ids = array();
     if(!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
@@ -84,7 +98,7 @@ class Shortcodes {
     if(empty($newsletters)) {
       return Hooks::applyFilters(
         'mailpoet_archive_no_newsletters',
-        __('Oops! There are no newsletters to display.', 'mailpoet')
+        __('발송된 뉴스레터가 없습니다.', 'mailpoet')
       );
     } else {
       $title = Hooks::applyFilters('mailpoet_archive_title', '');
@@ -92,6 +106,7 @@ class Shortcodes {
         $html .= '<h3 class="mailpoet_archive_title">'.$title.'</h3>';
       }
       $html .= '<ul class="mailpoet_archive">';
+      $count = 0;
       foreach($newsletters as $newsletter) {
         $queue = $newsletter->queue()->findOne();
         $html .= '<li>'.
@@ -102,6 +117,8 @@ class Shortcodes {
             Hooks::applyFilters('mailpoet_archive_subject', $newsletter, $subscriber, $queue).
           '</span>
         </li>';
+        if($count > 9) break;
+        $count++;
       }
       $html .= '</ul>';
     }
@@ -110,11 +127,30 @@ class Shortcodes {
 
   function renderArchiveDate($newsletter) {
     return date_i18n(
-      get_option('date_format'),
+      'Y년 m월 d일 - ',
       strtotime($newsletter->processed_at)
     );
   }
 
+  function renderArchiveDateDay($newsletter) {
+    return date_i18n(
+      'd',
+      strtotime($newsletter->processed_at)
+    );
+  }
+   function renderArchiveDateMonth($newsletter) {
+    return date_i18n(
+      'F',
+      strtotime($newsletter->processed_at)
+    );
+  }
+  function renderArchiveDateYear($newsletter) {
+    return date_i18n(
+      'y',
+      strtotime($newsletter->processed_at)
+    );
+  }
+  
   function renderArchiveSubject($newsletter, $subscriber, $queue) {
     $preview_url = NewsletterUrl::getViewInBrowserUrl(
       NewsletterUrl::TYPE_ARCHIVE,
@@ -122,9 +158,22 @@ class Shortcodes {
       $subscriber,
       $queue
     );
+    $n_subject = ($newsletter->type == 'notification_history') ? $newsletter->newsletter_rendered_subject : $newsletter->subject;
     return '<a href="'.esc_attr($preview_url).'" target="_blank" title="'
       .esc_attr(__('Preview in a new tab', 'mailpoet')).'">'
-      .esc_attr($newsletter->newsletter_rendered_subject).
+      .esc_attr($n_subject).
     '</a>';
   }
+  function renderArchivePreheader($newsletter, $subscriber, $queue) {
+    $preview_url = NewsletterUrl::getViewInBrowserUrl(
+      NewsletterUrl::TYPE_ARCHIVE,
+      $newsletter,
+      $subscriber,
+      $queue
+    );
+    return 
+      esc_attr($newsletter->preheader);
+      //print_r($newsletter);
+  }
+  
 }

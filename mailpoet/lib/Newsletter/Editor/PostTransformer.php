@@ -18,7 +18,7 @@ class PostTransformer {
     $meta_manager = new MetaInformationManager();
 
     $content = $content_manager->getContent($post, $this->args['displayType']);
-    $content = $meta_manager->appendMetaInformation($content, $post, $this->args);
+    //$content = $meta_manager->appendMetaInformation($content, $post, $this->args);
     $content = $content_manager->filterContent($content);
 
     $structure_transformer = new StructureTransformer();
@@ -68,14 +68,22 @@ class PostTransformer {
   }
 
   private function getFeaturedImage($post_id, $post_title, $image_full_width) {
-    if(has_post_thumbnail($post_id)) {
+    if(get_post_meta($post_id, 'post-second-thumbnail', true) != ''){ //if(has_post_thumbnail($post_id)) { 
       $thumbnail_id = get_post_thumbnail_id($post_id);
 
       // get attachment data (src, width, height)
       $image_info = wp_get_attachment_image_src(
         $thumbnail_id,
-        'mailpoet_newsletter_max'
+        'thevoux-newsletter-wide'
       );
+      
+      $thumbnail_url = get_post_meta($post_id, 'post-second-thumbnail', true);
+      
+      //get img_src
+      if(strpos($thumbnail_url, '-660x371') === false) {
+          $pos = strrpos($thumbnail_url, '.');
+          $thumbnail_url = substr_replace($thumbnail_url, '-660x371', $pos, 0);
+      }
 
       // get alt text
       $alt_text = trim(strip_tags(get_post_meta(
@@ -91,11 +99,11 @@ class PostTransformer {
       return array(
         'type' => 'image',
         'link' => get_permalink($post_id),
-        'src' => $image_info[0],
+        'src' => $thumbnail_url,
         'alt' => $alt_text,
         'fullWidth' => $image_full_width,
-        'width' => $image_info[1],
-        'height' => $image_info[2],
+        'width' => '660px',
+        'height' => '371px',
         'styles' => array(
           'block' => array(
             'textAlign' => 'center',
@@ -104,9 +112,43 @@ class PostTransformer {
       );
     }
   }
+  
+  private function getPostCategories($post_id, $post_type) {
+
+    // Get categories
+    $categories = wp_get_post_terms(
+      $post_id,
+      array('category'),
+      array('fields' => 'names', 'exclude' => '2, 3, 4, 73, 91, 92')
+    );
+    if(!empty($categories)) {
+      // check if the user specified a label to be displayed before the author's name
+      return $content . join(', ', $categories);
+    } else {
+      return '';
+    }
+  }
 
   private function appendPostTitle($post, $structure) {
     $title = $this->getPostTitle($post);
+    
+    $coauthor_terms = wp_get_object_terms( $post->ID, 'author', array(
+        'orderby' => 'term_order',
+        'order' => 'ASC',
+    ) );
+    $co_authors = "";
+    $coauthor_terms_array = objectToArray($coauthor_terms);
+    $co_authors = $coauthor_terms_array[0]['name'];
+    if(count($coauthor_terms_array)>1){
+        foreach ($coauthor_terms_array as $co) {
+           if($co != $coauthor_terms_array[0])
+           $co_authors .= ", ".$co['name'];
+        }
+    }
+    
+    $title = "<span style='color:red; font-size:12px; letter-spacing:1px; font-weight:600; font-family: Arial,\"Helvetica Neue\",Helvetica,sans-serif;'>". $this->getPostCategories($post->ID,$post->post_type) 
+                . "</span><div style='height:7px'></div>"."<strong style='font-weight:600 !important;'>". $title . "</strong>"
+                . "<span style='color:#9e9e9e; font-size:12px; letter-spacing:1px; font-weight:600; margin-bottom:15px; font-family: Arial,\"Helvetica Neue\",Helvetica,sans-serif; '>" . $co_authors . "</span><div style='height:11px'></div>";    
 
     // Append title always at the top of the post structure
     // Reuse an existing text block if needed
